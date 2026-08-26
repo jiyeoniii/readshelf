@@ -30,7 +30,7 @@ export default function ShelfPage() {
       <header className="flex flex-wrap items-end justify-between gap-6">
         <div>
           <p className="label-ko">나의 책장</p>
-          <h1 className="mt-2 font-[family-name:var(--font-serif)] text-[42px] leading-none tracking-[0.03em]">
+          <h1 className="display mt-2">
             MY SHELF
           </h1>
         </div>

@@ -31,7 +31,7 @@ export default function TrackerPage() {
     <div>
       <header>
         <p className="label-ko">독서 트래커</p>
-        <h1 className="mt-2 font-[family-name:var(--font-serif)] text-[42px] leading-none tracking-[0.03em]">
+        <h1 className="display mt-2">
           READING TRACKER
         </h1>
         <p className="mt-4 text-sm text-muted">

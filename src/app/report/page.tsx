@@ -76,7 +76,7 @@ export default function ReportPage() {
       <header className="flex flex-wrap items-end justify-between gap-6">
         <div>
           <p className="label-ko">AI 독서 리포트</p>
-          <h1 className="mt-2 font-[family-name:var(--font-serif)] text-[42px] leading-none tracking-[0.03em]">
+          <h1 className="display mt-2">
             AI REPORT
           </h1>
           <p className="mt-4 max-w-md text-sm leading-relaxed text-muted">

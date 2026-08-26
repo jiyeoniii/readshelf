@@ -80,8 +80,18 @@ body {
 
 .label-ko {
   font-size: 12px;
+  font-weight: 600;
   letter-spacing: 0.08em;
   color: var(--muted);
+}
+
+/* 페이지 제목 — 세 페이지가 같은 값을 쓰도록 한 곳에 모은다 */
+.display {
+  font-family: var(--font-serif), Georgia, "Times New Roman", serif;
+  font-size: 42px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.03em;
 }
 
 /* 책등 세로쓰기 — 글자를 세워 쌓는다 */
