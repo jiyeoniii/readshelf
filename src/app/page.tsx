@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useState } from "react";
 import AddBookDialog from "@/components/AddBookDialog";
 import BookSpine from "@/components/BookSpine";
+import { BookStack, FlowerVase, Rabbits } from "@/components/ShelfDecor";
+import ShelfFrame from "@/components/ShelfFrame";
 import { useHydrated, useShelf } from "@/lib/storage";
 import { bookProgress, currentStreak, totalPages } from "@/lib/stats";
 import type { Book, ReadingRecord } from "@/lib/types";
@@ -26,6 +28,7 @@ export default function ShelfPage() {
 
   return (
     <div>
+      <ShelfFrame>
       {/* 헤더 — 세리프 제목과 얇은 숫자 요약 */}
       <header className="flex flex-wrap items-end justify-between gap-6">
         <div>
@@ -79,6 +82,7 @@ export default function ShelfPage() {
           </button>
         </div>
       )}
+      </ShelfFrame>
 
       {/* 목록 */}
       {hydrated && books.length > 0 && (
@@ -162,8 +166,8 @@ function Shelf({
   empty: boolean;
 }) {
   return (
-    <div>
-      <div className="flex min-h-[385px] items-end gap-[3px] overflow-x-auto px-1 pb-0">
+    <div className="relative">
+      <div className="relative flex min-h-[385px] items-end gap-[3px] px-1 pb-0">
         {empty
           ? Array.from({ length: 5 }).map((_, i) => (
               <div
@@ -175,9 +179,51 @@ function Shelf({
           : books.map((b) => (
               <BookSpine key={b.id} book={b} progress={bookProgress(b, records)} />
             ))}
+
+        {/* 소품은 선반 오른쪽 끝에 모아 세운다 */}
+        <span className="pointer-events-none ml-auto hidden shrink-0 items-end gap-5 text-accent/45 sm:flex">
+          <BookStack />
+          <FlowerVase />
+          <span className="text-accent/50">
+            <Rabbits />
+          </span>
+        </span>
       </div>
-      {/* 선반 — 두꺼운 나무판 대신 가는 선 */}
-      <div className="h-px bg-ink/25" />
+
+      {/* 선반 널 — 두께가 있는 판처럼 겹선으로 */}
+      <div className="h-[3px] rounded-full bg-accent/45" />
+      <div className="mx-3 h-px bg-accent/25" />
+
+      {/* 선반을 받치는 브래킷 */}
+      <div className="mt-px flex justify-between px-6">
+        <Bracket />
+        <Bracket className="-scale-x-100" />
+      </div>
     </div>
+  );
+}
+
+/** 선반 아래를 받치는 작은 소용돌이 받침 */
+function Bracket({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 46 26"
+      width="46"
+      height="26"
+      aria-hidden
+      className={`text-accent/30 ${className ?? ""}`}
+    >
+      <g
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1}
+        strokeLinecap="round"
+      >
+        <path d="M2 1c0 12 8 22 20 24" />
+        <path d="M10 1c0 9 5 16 13 19" />
+        <path d="M23 25c8-2 13-8 13-14 0-4-3-6-6-5s-3 5 0 6" />
+        <circle cx="31" cy="9" r="1.2" />
+      </g>
+    </svg>
   );
 }
