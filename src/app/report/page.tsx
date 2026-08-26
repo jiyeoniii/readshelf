@@ -146,7 +146,7 @@ export default function ReportPage() {
           {/* 한줄 분석 — 이 페이지의 주인공 */}
           <section className="border-b border-ink/20 pb-14 text-center">
             <p className="label">In one line</p>
-            <p className="mx-auto mt-5 max-w-2xl font-[family-name:var(--font-serif)] text-[30px] leading-[1.45] tracking-tight">
+            <p className="mx-auto mt-5 max-w-2xl font-[family-name:var(--font-serif)] text-[30px] font-semibold leading-[1.45] tracking-tight">
               {report.summary}
             </p>
           </section>
