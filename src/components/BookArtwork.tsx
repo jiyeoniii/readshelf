@@ -1,25 +1,18 @@
 "use client";
 
 import { useRef, useState } from "react";
-import BookSpine from "@/components/BookSpine";
 import { fileToCoverPhoto, fileToSpinePhoto } from "@/lib/image";
 import { updateBook } from "@/lib/storage";
 import type { Book } from "@/lib/types";
 
-/** 상세 페이지에서 책등은 목록보다 조금 크게 보여준다 */
-const SPINE_SCALE = 1.15;
-
 /**
- * 상세 페이지 좌측 — 앞표지와 책등을 나란히 보여주고,
- * 둘 다 사진으로 바꿀 수 있게 한다.
+ * 상세 페이지 좌측 — 앞표지를 보여주고 사진을 바꿀 수 있게 한다.
+ *
+ * 책등은 책장에서만 보여주므로 여기서는 그리지 않는다.
+ * 다만 책등 사진을 나중에 바꿀 통로가 없어지면 안 되므로,
+ * 표지 아래에 작은 링크로만 남겨둔다.
  */
-export default function BookArtwork({
-  book,
-  progress,
-}: {
-  book: Book;
-  progress: number;
-}) {
+export default function BookArtwork({ book }: { book: Book }) {
   const coverInput = useRef<HTMLInputElement>(null);
   const spineInput = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
@@ -57,86 +50,79 @@ export default function BookArtwork({
   }
 
   return (
-    <div className="shrink-0">
-      <div className="flex items-start gap-4">
-        {/* 앞표지 */}
-        <div className="flex flex-col items-center gap-2">
-          {book.coverImage ? (
-            // 알라딘 CDN URL 또는 사용자가 올린 data URL이라 next/image 대상은 아니다
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={book.coverImage}
-              alt={`${book.title} 표지`}
-              className="w-[150px] rounded-lg shadow-[0_4px_14px_rgba(0,0,0,0.22)]"
-            />
-          ) : (
-            <div className="flex h-[214px] w-[150px] flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-line p-4 text-center">
-              <span className="text-2xl">📕</span>
-              <span className="text-[11px] leading-relaxed text-muted">
-                표지가 없어요
-              </span>
-            </div>
-          )}
-
-          <div className="flex flex-col items-center gap-0.5">
-            <button
-              type="button"
-              onClick={() => coverInput.current?.click()}
-              disabled={busy !== null}
-              className="rounded-lg border border-line px-3 py-1.5 text-xs text-muted transition hover:text-ink disabled:opacity-50"
-            >
-              {busy === "cover"
-                ? "처리 중…"
-                : book.coverImage
-                  ? "표지 바꾸기"
-                  : "표지 올리기"}
-            </button>
-            {book.coverImage && (
-              <button
-                type="button"
-                onClick={() => {
-                  setError(null);
-                  updateBook(book.id, { coverImage: null, coverAspect: null });
-                }}
-                className="text-[11px] text-muted underline hover:text-red-500"
-              >
-                표지 지우기
-              </button>
-            )}
-          </div>
+    <div className="flex w-[180px] shrink-0 flex-col items-center gap-3">
+      {book.coverImage ? (
+        // 알라딘 CDN URL 또는 사용자가 올린 data URL이라 next/image 대상은 아니다
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={book.coverImage}
+          alt={`${book.title} 표지`}
+          className="w-full rounded-lg shadow-[0_4px_16px_rgba(0,0,0,0.24)]"
+        />
+      ) : (
+        <div className="flex aspect-[2/3] w-full flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-line p-4 text-center">
+          <span className="text-2xl">📕</span>
+          <span className="text-[11px] leading-relaxed text-muted">
+            표지가 없어요
+          </span>
         </div>
+      )}
 
-        {/* 책등 */}
-        <div className="flex flex-col items-center gap-2">
-          <BookSpine book={book} progress={progress} scale={SPINE_SCALE} />
+      <div className="flex flex-col items-center gap-1">
+        <button
+          type="button"
+          onClick={() => coverInput.current?.click()}
+          disabled={busy !== null}
+          className="rounded-lg border border-line px-3 py-1.5 text-xs text-muted transition hover:text-ink disabled:opacity-50"
+        >
+          {busy === "cover"
+            ? "처리 중…"
+            : book.coverImage
+              ? "표지 바꾸기"
+              : "표지 올리기"}
+        </button>
 
-          <div className="flex flex-col items-center gap-0.5">
-            <button
-              type="button"
-              onClick={() => spineInput.current?.click()}
-              disabled={busy !== null}
-              className="rounded-lg border border-line px-3 py-1.5 text-xs text-muted transition hover:text-ink disabled:opacity-50"
-            >
-              {busy === "spine"
-                ? "처리 중…"
-                : book.spineImage
-                  ? "책등 바꾸기"
-                  : "책등 올리기"}
-            </button>
-            {book.spineImage && (
-              <button
-                type="button"
-                onClick={() => {
-                  setError(null);
-                  updateBook(book.id, { spineImage: null, spineAspect: null });
-                }}
-                className="text-[11px] text-muted underline hover:text-red-500"
-              >
-                템플릿으로
-              </button>
-            )}
-          </div>
-        </div>
+        {book.coverImage && (
+          <button
+            type="button"
+            onClick={() => {
+              setError(null);
+              updateBook(book.id, { coverImage: null, coverAspect: null });
+            }}
+            className="text-[11px] text-muted underline hover:text-red-500"
+          >
+            표지 지우기
+          </button>
+        )}
+      </div>
+
+      {/* 책등 사진 — 책장에서 쓰인다. 여기서는 통로만 남긴다 */}
+      <div className="flex flex-col items-center gap-1 border-t border-line pt-3">
+        <button
+          type="button"
+          onClick={() => spineInput.current?.click()}
+          disabled={busy !== null}
+          className="text-[11px] text-muted underline hover:text-ink disabled:opacity-50"
+        >
+          {busy === "spine"
+            ? "처리 중…"
+            : book.spineImage
+              ? "책등 사진 바꾸기"
+              : "책등 사진 올리기"}
+        </button>
+
+        {book.spineImage && (
+          <button
+            type="button"
+            onClick={() => {
+              setError(null);
+              updateBook(book.id, { spineImage: null, spineAspect: null });
+            }}
+            className="text-[11px] text-muted underline hover:text-red-500"
+          >
+            책등 템플릿으로
+          </button>
+        )}
       </div>
 
       <input
@@ -154,9 +140,7 @@ export default function BookArtwork({
         className="hidden"
       />
 
-      {error && (
-        <p className="mt-2 max-w-[300px] text-[11px] text-red-500">{error}</p>
-      )}
+      {error && <p className="text-center text-[11px] text-red-500">{error}</p>}
     </div>
   );
 }
