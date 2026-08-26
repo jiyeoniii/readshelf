@@ -97,7 +97,7 @@ export default function BookSearch({
           disabled={loading || !query.trim()}
           className="shrink-0 rounded-lg border border-line px-3 py-2 text-xs text-muted transition hover:text-ink disabled:opacity-40"
         >
-          {loading ? "검색 중…" : "표지 검색"}
+          {loading ? "검색 중…" : "책 검색"}
         </button>
       </div>
 

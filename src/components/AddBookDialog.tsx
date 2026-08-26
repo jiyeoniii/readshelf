@@ -319,7 +319,7 @@ export default function AddBookDialog({
                   ? "직접 올린 표지를 씁니다."
                   : coverUrl
                     ? "알라딘에서 가져온 표지입니다."
-                    : "위에서 표지를 검색하거나, 직접 찍어 올릴 수 있어요."}
+                    : "위에서 책을 검색하거나, 직접 찍어 올릴 수 있어요."}
               </p>
 
               <div className="mt-2 flex flex-wrap items-center gap-2">
