@@ -11,10 +11,12 @@ import {
   removeBook,
   removeRecord,
   updateBook,
+  updateRecord,
   useHydrated,
   useShelf,
 } from "@/lib/storage";
 import { bookProgress, lastReadDate, toDateKey } from "@/lib/stats";
+import type { ReadingRecord } from "@/lib/types";
 
 export default function BookDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -31,6 +33,7 @@ export default function BookDetailPage() {
     [records, id],
   );
 
+  const [editingRecord, setEditingRecord] = useState<string | null>(null);
   const [review, setReview] = useState("");
   const bookReview = book?.review;
   useEffect(() => {
@@ -151,18 +154,40 @@ export default function BookDetailPage() {
           </p>
         ) : (
           <ul className="mt-3 space-y-3">
-            {myRecords.map((r) => (
+            {myRecords.map((r) =>
+              editingRecord === r.id ? (
+                <li key={r.id}>
+                  <RecordForm
+                    bookId={book.id}
+                    totalPages={book.totalPages}
+                    lastEnd={furthest}
+                    record={r}
+                    onDone={() => setEditingRecord(null)}
+                  />
+                </li>
+              ) : (
               <li key={r.id} className="rounded-xl border border-line bg-surface p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div className="text-xs text-muted">
                     {r.date} · {r.startPage}–{r.endPage}쪽 ({r.pagesRead}쪽)
                   </div>
-                  <button
-                    onClick={() => removeRecord(r.id)}
-                    className="text-xs text-muted hover:text-red-500"
-                  >
-                    삭제
-                  </button>
+                  <div className="flex shrink-0 gap-2 text-xs">
+                    <button
+                      onClick={() => setEditingRecord(r.id)}
+                      className="text-muted hover:text-accent"
+                    >
+                      수정
+                    </button>
+                    <span aria-hidden className="text-line">
+                      |
+                    </span>
+                    <button
+                      onClick={() => removeRecord(r.id)}
+                      className="text-muted hover:text-red-500"
+                    >
+                      삭제
+                    </button>
+                  </div>
                 </div>
                 {r.quote && (
                   <blockquote className="mt-3 border-l-2 border-accent pl-3 text-sm italic leading-relaxed">
@@ -180,7 +205,8 @@ export default function BookDetailPage() {
                   </p>
                 )}
               </li>
-            ))}
+              ),
+            )}
           </ul>
         )}
       </section>
@@ -200,21 +226,35 @@ export default function BookDetailPage() {
   );
 }
 
+/**
+ * 독서 기록 입력 폼 — 새로 남길 때와 기존 기록을 고칠 때 같이 쓴다.
+ * record를 넘기면 그 기록을 고치는 모드로 열린다.
+ */
 function RecordForm({
   bookId,
   totalPages,
   lastEnd,
+  record,
+  onDone,
 }: {
   bookId: string;
   totalPages: number;
   lastEnd: number;
+  record?: ReadingRecord;
+  onDone?: () => void;
 }) {
-  const [date, setDate] = useState(() => toDateKey(new Date()));
-  const [startPage, setStartPage] = useState(String(lastEnd ? lastEnd + 1 : ""));
-  const [endPage, setEndPage] = useState("");
-  const [quote, setQuote] = useState("");
-  const [quotePage, setQuotePage] = useState("");
-  const [memo, setMemo] = useState("");
+  const editing = record !== undefined;
+
+  const [date, setDate] = useState(record?.date ?? toDateKey(new Date()));
+  const [startPage, setStartPage] = useState(
+    record ? String(record.startPage) : String(lastEnd ? lastEnd + 1 : ""),
+  );
+  const [endPage, setEndPage] = useState(record ? String(record.endPage) : "");
+  const [quote, setQuote] = useState(record?.quote ?? "");
+  const [quotePage, setQuotePage] = useState(
+    record?.quotePage != null ? String(record.quotePage) : "",
+  );
+  const [memo, setMemo] = useState(record?.memo ?? "");
 
   const start = Number(startPage) || 0;
   const end = Number(endPage) || 0;
@@ -224,9 +264,8 @@ function RecordForm({
   function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!valid) return;
-    addRecord({
-      id: newId(),
-      bookId,
+
+    const fields = {
       date,
       startPage: start,
       endPage: end,
@@ -234,7 +273,16 @@ function RecordForm({
       quote: quote.trim(),
       quotePage: quotePage ? Number(quotePage) : null,
       memo: memo.trim(),
-    });
+    };
+
+    if (record) {
+      updateRecord(record.id, fields);
+      onDone?.();
+      return;
+    }
+
+    addRecord({ id: newId(), bookId, ...fields });
+    // 이어서 기록하기 좋게 다음 시작 페이지만 남기고 비운다
     setStartPage(String(end + 1));
     setEndPage("");
     setQuote("");
@@ -243,8 +291,15 @@ function RecordForm({
   }
 
   return (
-    <form onSubmit={submit} className="rounded-2xl border border-line bg-surface p-5">
-      <h2 className="text-sm font-semibold">오늘의 독서 기록</h2>
+    <form
+      onSubmit={submit}
+      className={`rounded-2xl border bg-surface p-5 ${
+        editing ? "border-accent" : "border-line"
+      }`}
+    >
+      <h2 className="text-sm font-semibold">
+        {editing ? "기록 수정" : "오늘의 독서 기록"}
+      </h2>
 
       <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <label className="col-span-2 block">
@@ -312,17 +367,28 @@ function RecordForm({
         />
       </label>
 
-      <div className="mt-4 flex items-center justify-between">
+      <div className="mt-4 flex items-center justify-between gap-3">
         <span className="text-xs text-muted">
           {valid ? `${pagesRead}쪽 읽음` : "페이지 범위를 입력하세요"}
         </span>
-        <button
-          type="submit"
-          disabled={!valid}
-          className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white disabled:opacity-40"
-        >
-          기록 남기기
-        </button>
+        <div className="flex shrink-0 items-center gap-2">
+          {editing && (
+            <button
+              type="button"
+              onClick={onDone}
+              className="rounded-lg px-3 py-2 text-sm text-muted hover:text-ink"
+            >
+              취소
+            </button>
+          )}
+          <button
+            type="submit"
+            disabled={!valid}
+            className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white disabled:opacity-40"
+          >
+            {editing ? "수정 저장" : "기록 남기기"}
+          </button>
+        </div>
       </div>
     </form>
   );

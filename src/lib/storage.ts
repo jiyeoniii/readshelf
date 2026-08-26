@@ -139,6 +139,13 @@ export function addRecord(record: ReadingRecord) {
   mutate((d) => ({ ...d, records: [record, ...d.records] }));
 }
 
+export function updateRecord(id: string, patch: Partial<ReadingRecord>) {
+  mutate((d) => ({
+    ...d,
+    records: d.records.map((r) => (r.id === id ? { ...r, ...patch } : r)),
+  }));
+}
+
 export function removeRecord(id: string) {
   mutate((d) => ({ ...d, records: d.records.filter((r) => r.id !== id) }));
 }
