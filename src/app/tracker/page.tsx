@@ -72,10 +72,22 @@ export default function TrackerPage() {
                     href={book ? `/book/${book.id}` : "/"}
                     className="flex items-center gap-3 px-4 py-3 transition hover:bg-accent-soft/50"
                   >
-                    <span
-                      className="h-7 w-1.5 shrink-0 rounded-sm"
-                      style={{ backgroundColor: book?.spineColor ?? "var(--border)" }}
-                    />
+                    {book?.coverImage ? (
+                      // 알라딘 CDN URL 또는 사용자가 올린 data URL
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={book.coverImage}
+                        alt=""
+                        className="h-11 w-8 shrink-0 rounded-sm object-cover shadow-sm"
+                      />
+                    ) : (
+                      <span
+                        className="h-11 w-2 shrink-0 rounded-sm"
+                        style={{
+                          backgroundColor: book?.spineColor ?? "var(--border)",
+                        }}
+                      />
+                    )}
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-sm font-medium">
                         {book?.title ?? "삭제된 책"}
