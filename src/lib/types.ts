@@ -65,12 +65,24 @@ export interface ReadingRecord {
   quotePage: number | null;
 }
 
+/** AI가 추천한 다음 책 — 알라딘에서 실재 여부를 확인한 것만 남는다 */
+export interface Recommendation {
+  title: string;
+  author: string;
+  /** 이 책을 왜 추천하는지 */
+  reason: string;
+  coverUrl: string | null;
+  isbn: string | null;
+}
+
 export interface AIReport {
   preferredGenres: string;
   keywords: string[];
   readingHabit: string;
   ratingPattern: string;
   summary: string;
+  /** 이전 버전 리포트에는 없을 수 있다 */
+  recommendations?: Recommendation[];
   generatedAt: string;
 }
 

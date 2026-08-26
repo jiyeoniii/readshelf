@@ -2,9 +2,13 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { saveReport, useHydrated, useShelf } from "@/lib/storage";
+import { addBook, newId, saveReport, useHydrated, useShelf } from "@/lib/storage";
 import { currentStreak, monthlyStats, totalPages } from "@/lib/stats";
-import type { AIReport } from "@/lib/types";
+import {
+  SPINE_COLORS,
+  type AIReport,
+  type Recommendation,
+} from "@/lib/types";
 
 export default function ReportPage() {
   const { books, records, report } = useShelf();
@@ -41,6 +45,31 @@ export default function ReportPage() {
   }
 
   const month = monthlyStats(records);
+
+  /** 추천받은 책이 이미 책장에 있는지 */
+  function onShelf(rec: Recommendation) {
+    return books.some((b) => b.title.trim() === rec.title.trim());
+  }
+
+  /** 추천 책을 바로 책장에 꽂는다. 장르·페이지 수는 나중에 수정하면 된다 */
+  function addRecommendation(rec: Recommendation) {
+    addBook({
+      id: newId(),
+      title: rec.title,
+      author: rec.author || "저자 미상",
+      publisher: "",
+      genre: "기타",
+      spineColor: SPINE_COLORS[books.length % SPINE_COLORS.length],
+      spineImage: null,
+      spineAspect: null,
+      coverImage: rec.coverUrl,
+      coverAspect: null,
+      totalPages: 0,
+      rating: 0,
+      review: "",
+      createdAt: new Date().toISOString(),
+    });
+  }
 
   return (
     <div className="space-y-8">
@@ -134,6 +163,51 @@ export default function ReportPage() {
               </div>
             </section>
           </div>
+
+          {report.recommendations && report.recommendations.length > 0 && (
+            <section className="rounded-2xl border border-line bg-surface p-5">
+              <p className="text-xs font-medium text-muted">
+                📖 다음에 읽으면 좋을 책
+              </p>
+
+              <ul className="mt-4 space-y-5">
+                {report.recommendations.map((rec) => (
+                  <li key={rec.isbn ?? rec.title} className="flex gap-4">
+                    {rec.coverUrl ? (
+                      // 알라딘 CDN 이미지라 next/image 대상은 아니다
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={rec.coverUrl}
+                        alt=""
+                        className="h-[86px] w-[60px] shrink-0 rounded-md object-cover shadow-sm"
+                      />
+                    ) : (
+                      <span className="flex h-[86px] w-[60px] shrink-0 items-center justify-center rounded-md border border-dashed border-line text-lg">
+                        📕
+                      </span>
+                    )}
+
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold">{rec.title}</p>
+                      <p className="mt-0.5 text-xs text-muted">{rec.author}</p>
+                      <p className="mt-2 text-sm leading-relaxed">{rec.reason}</p>
+                      <button
+                        onClick={() => addRecommendation(rec)}
+                        disabled={onShelf(rec)}
+                        className="mt-2.5 rounded-lg border border-line px-3 py-1 text-xs text-muted transition hover:border-accent hover:text-ink disabled:opacity-40"
+                      >
+                        {onShelf(rec) ? "책장에 있음" : "책장에 추가"}
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+
+              <p className="mt-4 border-t border-line pt-3 text-[11px] leading-relaxed text-muted/80">
+                추천받은 책은 알라딘에서 실제로 있는지 확인한 것만 보여드려요.
+              </p>
+            </section>
+          )}
 
           <div className="flex items-center justify-between px-1">
             <p className="text-xs text-muted">
