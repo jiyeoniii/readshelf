@@ -1,13 +1,41 @@
-# ReadShelf 📚
+# ReadShelf
 
 책을 읽고 기록할수록 AI가 나의 독서 습관과 취향을 발견해주는 독서 분석 도구.
 
+읽은 책을 저장하는 데서 끝내지 않고, 쌓인 기록을 근거로 **"나는 어떤 책을 좋아하고, 어떻게 읽는 사람인가?"** 에 답합니다.
+
+**🔗 [readshelf-murex.vercel.app](https://readshelf-murex.vercel.app)**
+
+<br>
+
+![나의 책장](docs/shelf.png)
+
+<br>
+
+## 무엇을 할 수 있나
+
+**책장** — 제목만 검색하면 표지·저자·출판사·페이지 수가 한 번에 채워집니다. 책등은 페이지 수만큼 두꺼워지고, 실제 책 옆면을 찍어 올리면 그 사진이 그대로 책등이 됩니다.
+
+**독서 기록** — 날짜와 페이지 범위, 인상 깊은 문장, 메모를 남깁니다. 이 기록이 그대로 AI 분석의 재료가 됩니다.
+
+**독서 트래커** — GitHub 잔디처럼 날마다 읽은 양이 색으로 쌓입니다. 연속 독서일과 월간·누적 독서량을 함께 봅니다.
+
+**AI 리포트** — 선호 장르, 관심 주제, 독서 습관, 높은 평점의 공통점을 분석하고, **다음에 읽을 책 3권을 추천**합니다.
+
+<br>
+
+| 독서 트래커 | AI 리포트 |
+|---|---|
+| ![트래커](docs/tracker.png) | ![리포트](docs/report.png) |
+
+<br>
+
 ## 스택
 
-- Next.js 15 (App Router) + TypeScript + Tailwind CSS v4
+- **Next.js 15** (App Router) + TypeScript + Tailwind CSS v4
 - **DB 없음** — 모든 데이터는 브라우저 `localStorage`(`readshelf:v1`)에 저장
-- AI 분석: Gemini API (`gemini-3.7-flash`, 구조화 출력) — 서버 라우트 `POST /api/report`
-- 책 검색: 알라딘 OpenAPI — 서버 라우트 `GET /api/books/search`
+- **Gemini API** (`@google/genai`) — AI 리포트 생성, 서버 라우트 `POST /api/report`
+- **알라딘 OpenAPI** — 책 검색과 추천 검증, 서버 라우트 `GET /api/books/search`·`/api/books/lookup`
 
 ## 실행
 
@@ -17,59 +45,80 @@ cp .env.example .env.local   # API 키 입력
 npm run dev
 ```
 
-키 없이도 책장 · 상세 기록 · 트래커는 모두 동작합니다.
+**키가 없어도 책장 · 독서 기록 · 트래커는 전부 동작합니다.**
 
-| 키 | 없으면 |
-|---|---|
-| `GEMINI_API_KEY` | AI 리포트만 막힙니다 |
-| `ALADIN_TTB_KEY` | 표지 검색만 막힙니다 (표지를 직접 올리는 건 그대로 됩니다) |
+| 키 | 발급처 | 없으면 |
+|---|---|---|
+| `GEMINI_API_KEY` | [AI Studio](https://aistudio.google.com/apikey) — 무료, 결제 정보 불필요 | AI 리포트만 막힘 |
+| `ALADIN_TTB_KEY` | [알라딘 OpenAPI](https://www.aladin.co.kr/ttb/wblog_manage.aspx) — 사이트 URL 등록 후 즉시 발급, 1일 5,000회 | 책 검색만 막힘 (표지를 직접 올리는 건 그대로 됨) |
 
-## Vercel 배포
+> 빌드 전에 `npm run dev`를 먼저 내려주세요. 두 명령이 같은 `.next` 폴더를 써서, 동시에 돌리면 dev 서버가 사라진 청크를 참조하다 죽습니다. 타입 검사만 필요하면 `.next`를 건드리지 않는 `npx tsc --noEmit`을 쓰면 됩니다.
+
+## 배포 (Vercel)
 
 1. GitHub에 push → Vercel에서 Import
-2. **Settings → Environment Variables** 에 `GEMINI_API_KEY`와 `ALADIN_TTB_KEY` 추가
-3. Deploy (별도 빌드 설정 불필요)
+2. **Settings → Environment Variables** 에 두 키 추가 (Production + Preview)
+3. **Deployments → ⋯ → Redeploy** — 환경 변수는 저장만으로 반영되지 않고 재배포가 필요합니다
 
-데이터가 브라우저에만 저장되므로 DB 연결은 필요 없습니다. 대신 **기기·브라우저가 바뀌면 기록도 달라집니다.**
+DB가 없으므로 별도 연결은 필요 없습니다. 대신 **기기·브라우저가 바뀌면 기록도 달라집니다.**
+
+<br>
 
 ## 화면
 
 | 경로 | 화면 | 내용 |
 |---|---|---|
-| `/` | 책장 | 책등 형태로 쌓이는 책, 책 추가, 목록 보기 |
-| `/book/[id]` | 책 상세 | 별점 · 한줄 후기 · 진행률 · 인상 깊은 문장 · 페이지 · 메모 |
-| `/tracker` | 독서 트래커 | GitHub 잔디형 히트맵, 연속 독서일, 월간/총 독서량 |
-| `/report` | AI 리포트 | 선호 장르 · 관심 주제 · 독서 습관 · 높은 평점의 공통점 · 한줄 분석 · 다음에 읽을 책 추천 |
+| `/` | 책장 | 책등으로 쌓이는 책, 책 추가·수정, 목록 보기 |
+| `/book/[id]` | 책 상세 | 표지 · 별점 · 한줄 후기 · 진행률 · 독서 기록 추가/수정/삭제 |
+| `/tracker` | 독서 트래커 | 잔디 히트맵, 연속 독서일, 월간·누적 독서량, 최근 기록 |
+| `/report` | AI 리포트 | 한줄 분석 · 선호 장르 · 관심 주제 · 독서 습관 · 평점 패턴 · 책 추천 |
 
 ## 데이터 구조
 
 ```ts
-Book          { id, title, author, publisher, genre, totalPages, rating, review, createdAt,
-                spineColor, spineImage, spineAspect,   // 책등 — 색상 템플릿 또는 직접 찍은 사진
-                coverImage, coverAspect }              // 앞표지 — 알라딘 URL 또는 직접 올린 사진
-ReadingRecord { id, bookId, date, startPage, endPage, pagesRead, memo, quote, quotePage }
-AIReport      { preferredGenres, keywords[], readingHabit, ratingPattern, summary, generatedAt }
+Book           { id, title, author, publisher, genre, totalPages, rating, review, createdAt,
+                 spineColor, spineImage, spineAspect,   // 책등 — 색상 템플릿 또는 직접 찍은 사진
+                 coverImage, coverAspect }              // 앞표지 — 알라딘 URL 또는 직접 올린 사진
+ReadingRecord  { id, bookId, date, startPage, endPage, pagesRead, memo, quote, quotePage }
+AIReport       { summary, preferredGenres, keywords[], readingHabit, ratingPattern,
+                 recommendations[], generatedAt }
+Recommendation { title, author, reason, coverUrl, isbn }
 ```
 
-- **진행률** = 해당 책 기록 중 가장 큰 `endPage` ÷ `totalPages`
-- **잔디 단계** = 0쪽 / 1–10쪽 / 11–30쪽 / 31쪽 이상
+- **진행률** = 그 책 기록 중 가장 큰 `endPage` ÷ `totalPages`
+- **잔디 단계** = 0쪽 / 1–30쪽 / 31–99쪽 / 100쪽 이상
 - **연속 독서일** = 오늘(또는 어제)부터 거슬러 올라가며 기록이 끊기지 않은 일수
 
-## AI 리포트 동작
+<br>
 
-`src/app/api/report/route.ts` 가 브라우저에서 받은 책·기록을 서버에서 요약문(digest)으로 정리한 뒤 Gemini에 넘깁니다.
-JSON 스키마로 응답 형태를 강제하고 zod로 한 번 더 검증하므로 화면이 깨지지 않고, 시스템 프롬프트에서 **입력된 데이터에만 근거하도록** 제약합니다.
-생성된 리포트는 `localStorage`에 저장되어 재방문 시에도 유지되고, "다시 분석하기"로 갱신합니다.
+## 만들면서 내린 결정들
 
-### 책 추천은 지어낸 책을 걸러낸다
+### AI가 지어낸 책은 걸러낸다
 
-생성 모델은 그럴듯한 가짜 제목을 만들어낼 수 있습니다.
-그래서 추천받은 책을 **알라딘에서 제목과 저자로 대조해 실물을 찾은 것만** 보여줍니다.
+생성 모델은 그럴듯한 **가짜 제목을 만들어냅니다.** 그래서 추천받은 책을 알라딘에서 대조해 **실물을 찾은 것만** 보여줍니다. 덤으로 진짜 표지와 정확한 저자명도 얻습니다.
 
-제목만 대조하면 동명이서를 잘못 집습니다 —
-「끕림」은 이병률의 여행 에세이와 세라 워터스의 소설이 둘 다 있어서,
-저자까지 맞는 것만 인정합니다.
+제목만 대조했더니 동명이서를 잘못 집었습니다 — 「끌림」은 이병률의 여행 에세이와 세라 워터스의 소설이 둘 다 있어서, AI가 의도한 책과 다른 책의 표지가 붙었습니다. **저자까지 맞는 것만** 인정하도록 고쳤습니다.
 
-## MVP 제외 (PRD 기준)
+### 모델은 재보고 골랐다
 
-뽀모도로, 친구/소셜, 리뷰 공유, 댓글·좋아요, 책 추천, 외부 연동, 책 검색 API, 세부 통계, 책장 애니메이션
+최신인 `gemini-3.7-flash`는 평균 50초에 3회 중 1회는 503(과부하)이 떴습니다. 독서 기록을 다섯 문장으로 요약하는 작업에 그만한 대기는 맞지 않아, 평균 2초에 3/3 성공한 **`gemini-3.5-flash`를 기본**으로 두고 과부하 시 다음 모델로 넘어가게 했습니다.
+
+### 총 페이지 수는 두 번 물어본다
+
+알라딘 **검색 API는 페이지 수를 주지 않습니다.** 상세조회(ItemLookUp)에서만 옵니다. 그래서 검색 결과를 고르는 순간 ISBN으로 한 번 더 조회합니다. 일일 호출 한도를 아끼려고 목록 전체가 아니라 고른 한 권만 조회합니다.
+
+### 책등 비율은 사진을 따른다
+
+실제 책등은 세로:가로가 8~10:1입니다. 템플릿만 1:5로 두껍게 그리면 진짜 비율인 사진 책등이 유독 얇아 보여서, **템플릿도 실제 비율에 맞췄습니다.** 사진을 올린 책은 그 사진의 비율로 폭을 계산해 잘리지 않게 합니다.
+
+### 공개 엔드포인트라 상한을 둔다
+
+`/api/report`는 누구나 호출할 수 있어 남이 내 API 크레딧을 태울 수 있습니다. 입력 크기를 책 200권·기록 2,000건으로 제한했고, Gemini 무료 티어는 한도를 넘겨도 **과금이 아니라 요청이 실패**해 요금 위험이 없습니다.
+
+<br>
+
+## MVP에서 제외 (PRD 기준)
+
+뽀모도로 타이머, 친구 추가, 소셜 기능, 리뷰 공유, 댓글·좋아요, 외부 플랫폼 연동, 세부 통계, 책장 애니메이션
+
+> PRD에서 제외했던 **책 검색 API**와 **책 추천**은 이후 범위에 넣어 구현했습니다.
