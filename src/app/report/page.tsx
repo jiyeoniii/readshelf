@@ -162,11 +162,11 @@ export default function ReportPage() {
             <div className="rounded-2xl bg-surface p-7 shadow-[0_2px_18px_rgba(26,23,20,0.05)]">
               <p className="label">Themes</p>
               <p className="mt-2 text-[15px]">주요 관심 주제</p>
-              <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2">
+              <div className="mt-4 flex flex-wrap gap-2">
                 {report.keywords.map((k) => (
                   <span
                     key={k}
-                    className="font-[family-name:var(--font-serif)] text-xl text-accent"
+                    className="rounded-full bg-accent/20 px-5 py-2 text-sm text-accent-ink"
                   >
                     {k}
                   </span>
