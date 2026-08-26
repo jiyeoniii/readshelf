@@ -28,11 +28,11 @@ export function pagesByDate(records: ReadingRecord[]): Map<string, number> {
   return map;
 }
 
-/** GitHub 잔디 단계 (0~4) */
+/** GitHub 잔디 단계 (0~3) */
 export function level(pages: number): 0 | 1 | 2 | 3 {
   if (pages <= 0) return 0;
-  if (pages <= 10) return 1;
-  if (pages <= 30) return 2;
+  if (pages <= 30) return 1;
+  if (pages <= 99) return 2;
   return 3;
 }
 

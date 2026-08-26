@@ -86,7 +86,7 @@ export default function Heatmap({
           />
         ))}
         <span>많음</span>
-        <span className="ml-2">· 1~10쪽 / 11~30쪽 / 31쪽 이상</span>
+        <span className="ml-2">· 1~30쪽 / 31~99쪽 / 100쪽 이상</span>
       </div>
     </div>
   );
