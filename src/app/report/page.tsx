@@ -151,7 +151,7 @@ export default function ReportPage() {
             </p>
           </section>
 
-          <div className="mt-16 grid gap-x-14 gap-y-12 sm:grid-cols-2">
+          <div className="mt-16 grid gap-5 sm:grid-cols-2">
             <Block label="Genre" title="선호 장르" body={report.preferredGenres} />
             <Block label="Habit" title="독서 습관" body={report.readingHabit} />
             <Block
@@ -159,7 +159,7 @@ export default function ReportPage() {
               title="높은 평점의 공통점"
               body={report.ratingPattern}
             />
-            <div>
+            <div className="rounded-2xl bg-surface p-7 shadow-[0_2px_18px_rgba(26,23,20,0.05)]">
               <p className="label">Themes</p>
               <p className="mt-2 text-[15px]">주요 관심 주제</p>
               <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2">
@@ -251,7 +251,7 @@ function Block({
   body: string;
 }) {
   return (
-    <div>
+    <div className="rounded-2xl bg-surface p-7 shadow-[0_2px_18px_rgba(26,23,20,0.05)]">
       <p className="label">{label}</p>
       <p className="mt-2 text-[15px]">{title}</p>
       <p className="mt-3 text-sm leading-relaxed text-ink/80">{body}</p>
