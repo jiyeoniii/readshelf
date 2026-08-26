@@ -75,9 +75,9 @@ export default function ReportPage() {
     <div>
       <header className="flex flex-wrap items-end justify-between gap-6">
         <div>
-          <p className="label">AI Report</p>
-          <h1 className="mt-2 font-[family-name:var(--font-serif)] text-[42px] leading-none tracking-tight">
-            AI 독서 리포트
+          <p className="label-ko">AI 독서 리포트</p>
+          <h1 className="mt-2 font-[family-name:var(--font-serif)] text-[42px] leading-none tracking-[0.03em]">
+            AI REPORT
           </h1>
           <p className="mt-4 max-w-md text-sm leading-relaxed text-muted">
             내가 남긴 기록을 근거로, 나는 어떤 책을 좋아하는 사람인지 알려드려요.

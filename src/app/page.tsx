@@ -29,9 +29,9 @@ export default function ShelfPage() {
       {/* 헤더 — 세리프 제목과 얇은 숫자 요약 */}
       <header className="flex flex-wrap items-end justify-between gap-6">
         <div>
-          <p className="label">My Shelf</p>
-          <h1 className="mt-2 font-[family-name:var(--font-serif)] text-[42px] leading-none tracking-tight">
-            나의 책장
+          <p className="label-ko">나의 책장</p>
+          <h1 className="mt-2 font-[family-name:var(--font-serif)] text-[42px] leading-none tracking-[0.03em]">
+            MY SHELF
           </h1>
         </div>
 

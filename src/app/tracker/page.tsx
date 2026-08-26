@@ -30,9 +30,9 @@ export default function TrackerPage() {
   return (
     <div>
       <header>
-        <p className="label">Reading Tracker</p>
-        <h1 className="mt-2 font-[family-name:var(--font-serif)] text-[42px] leading-none tracking-tight">
-          독서 트래커
+        <p className="label-ko">독서 트래커</p>
+        <h1 className="mt-2 font-[family-name:var(--font-serif)] text-[42px] leading-none tracking-[0.03em]">
+          READING TRACKER
         </h1>
         <p className="mt-4 text-sm text-muted">
           하루에 읽은 페이지가 진해질수록 나의 독서 습관이 보입니다.
