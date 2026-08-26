@@ -16,7 +16,7 @@ export default function RatingStars({
       {[1, 2, 3, 4, 5].map((n) => {
         const filled = n <= value;
         const star = (
-          <span className={filled ? "text-amber-500" : "text-muted/40"}>★</span>
+          <span className={filled ? "text-accent" : "text-line"}>★</span>
         );
         if (!onChange) return <span key={n}>{star}</span>;
         return (
@@ -32,7 +32,9 @@ export default function RatingStars({
         );
       })}
       {onChange && value > 0 && (
-        <span className="ml-2 text-xs text-muted">{value}.0</span>
+        <span className="ml-2.5 font-[family-name:var(--font-serif)] text-base text-muted">
+          {value}.0
+        </span>
       )}
     </div>
   );

@@ -153,10 +153,12 @@ export default function AddBookDialog({
       <form
         onClick={(e) => e.stopPropagation()}
         onSubmit={submit}
-        className="w-full max-w-md rounded-t-2xl border border-line bg-surface p-6 shadow-2xl sm:rounded-2xl"
+        className="w-full max-w-md border border-line bg-bg p-8 shadow-[0_10px_60px_rgba(0,0,0,0.12)]"
       >
-        <h2 className="text-lg font-semibold">{editing ? "책 수정" : "책 추가"}</h2>
-        <p className="mt-1 text-sm text-muted">
+        <h2 className="font-[family-name:var(--font-serif)] text-[26px] leading-none">
+          {editing ? "책 수정" : "책 추가"}
+        </h2>
+        <p className="mt-3 text-xs leading-relaxed text-muted">
           {editing
             ? "제목을 다시 검색하면 표지와 정보를 새로 가져옵니다."
             : "한 권을 추가할 때마다 나의 책장이 채워집니다."}
@@ -175,7 +177,7 @@ export default function AddBookDialog({
                 value={author}
                 onChange={(e) => setAuthor(e.target.value)}
                 placeholder="예) 김호연"
-                className="w-full rounded-lg border border-line bg-bg px-3 py-2 text-sm outline-none focus:border-accent"
+                className="w-full border-b border-line bg-transparent pb-2 text-sm outline-none transition focus:border-accent"
               />
             </Field>
 
@@ -184,7 +186,7 @@ export default function AddBookDialog({
                 value={publisher}
                 onChange={(e) => setPublisher(e.target.value)}
                 placeholder="예) 문학동네"
-                className="w-full rounded-lg border border-line bg-bg px-3 py-2 text-sm outline-none focus:border-accent"
+                className="w-full border-b border-line bg-transparent pb-2 text-sm outline-none transition focus:border-accent"
               />
             </Field>
           </div>
@@ -194,7 +196,7 @@ export default function AddBookDialog({
               <select
                 value={genre}
                 onChange={(e) => setGenre(e.target.value as Genre)}
-                className="w-full rounded-lg border border-line bg-bg px-3 py-2 text-sm outline-none focus:border-accent"
+                className="w-full border-b border-line bg-transparent pb-2 text-sm outline-none transition focus:border-accent"
               >
                 {GENRES.map((g) => (
                   <option key={g} value={g}>
@@ -210,7 +212,7 @@ export default function AddBookDialog({
                 onChange={(e) => setTotalPages(e.target.value.replace(/\D/g, ""))}
                 inputMode="numeric"
                 placeholder="예) 320"
-                className="w-full rounded-lg border border-line bg-bg px-3 py-2 text-sm outline-none focus:border-accent"
+                className="w-full border-b border-line bg-transparent pb-2 text-sm outline-none transition focus:border-accent"
               />
             </Field>
           </div>
@@ -219,9 +221,7 @@ export default function AddBookDialog({
             <div className="min-w-0 flex-1 space-y-4">
               {/* 사진을 올리면 색상은 쓰이지 않으므로 흐리게 둔다 */}
               <div className={photo ? "opacity-40 transition" : "transition"}>
-                <span className="mb-1.5 block text-xs font-medium text-muted">
-                  책등 색상
-                </span>
+                <span className="label mb-2 block">책등 색상</span>
                 <div className="flex flex-wrap gap-2">
                   {SPINE_COLORS.map((c) => (
                     <button
@@ -249,7 +249,7 @@ export default function AddBookDialog({
                     type="button"
                     onClick={() => fileInput.current?.click()}
                     disabled={photoBusy}
-                    className="rounded-lg border border-line px-3 py-1.5 text-xs text-muted transition hover:text-ink disabled:opacity-50"
+                    className="border-b border-line pb-1 text-[11px] uppercase tracking-[0.14em] text-muted transition hover:border-accent hover:text-accent disabled:opacity-40"
                   >
                     {photoBusy
                       ? "처리 중…"
@@ -300,7 +300,7 @@ export default function AddBookDialog({
           </div>
 
           {/* 앞표지 — 검색으로 자동으로 채워지고, 없으면 직접 올린다 */}
-          <div className="flex items-start gap-4 rounded-xl border border-line bg-bg p-3">
+          <div className="flex items-start gap-4 border-t border-line-soft pt-5">
             <CoverThumb
               src={coverPhoto?.dataUrl ?? coverUrl}
               alt={title || "표지"}
@@ -327,7 +327,7 @@ export default function AddBookDialog({
                   type="button"
                   onClick={() => coverInput.current?.click()}
                   disabled={coverBusy}
-                  className="rounded-lg border border-line px-3 py-1.5 text-xs text-muted transition hover:text-ink disabled:opacity-50"
+                  className="border-b border-line pb-1 text-[11px] uppercase tracking-[0.14em] text-muted transition hover:border-accent hover:text-accent disabled:opacity-40"
                 >
                   {coverBusy
                     ? "처리 중…"
@@ -367,16 +367,16 @@ export default function AddBookDialog({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg px-4 py-2 text-sm text-muted hover:text-ink"
+            className="px-3 text-[11px] uppercase tracking-[0.14em] text-muted hover:text-ink"
           >
-            취소
+            Cancel
           </button>
           <button
             type="submit"
             disabled={!canSubmit}
-            className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white disabled:opacity-40"
+            className="rounded-full bg-ink px-6 py-2.5 text-[11px] uppercase tracking-[0.14em] text-bg transition hover:bg-accent disabled:opacity-30"
           >
-            {editing ? "저장" : "책장에 꽂기"}
+            {editing ? "Save" : "Add to shelf"}
           </button>
         </div>
       </form>
@@ -393,7 +393,7 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-xs font-medium text-muted">{label}</span>
+      <span className="label mb-2 block">{label}</span>
       {children}
     </label>
   );

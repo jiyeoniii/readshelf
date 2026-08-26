@@ -1,55 +1,87 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css");
 @import "tailwindcss";
 
+/*
+ * 크림색 바탕에 더스티 핑크 하나만 얹는다.
+ * 테두리는 거의 쓰지 않고 여백과 헤어라인으로 구획을 나눈다.
+ */
 :root {
-  --bg: #f6f1e8;
-  --surface: #fffdf8;
-  --border: #e4d9c6;
-  --text: #2c2620;
-  --muted: #7a6f60;
-  --accent: #7c4b2a;
-  --accent-soft: #f0e2d2;
-  --grass-0: #ece3d4;
-  --grass-1: #d8c39c;
-  --grass-2: #b98a4e;
-  --grass-3: #7c4b2a;
+  --bg: #fdfbf4;
+  --surface: #ffffff;
+  --line: #e9e3d7;
+  --line-soft: #f2ede3;
+  --ink: #1a1714;
+  --muted: #8d8578;
+  --accent: #c4788d;
+  --accent-ink: #a85a72;
+  --accent-soft: #f9edf0;
+
+  /* 잔디 — 크림에서 로즈로 */
+  --grass-0: #efe9dc;
+  --grass-1: #f0cdd6;
+  --grass-2: #dc9aac;
+  --grass-3: #bb6480;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #17140f;
-    --surface: #201c16;
-    --border: #362f25;
-    --text: #f0e9dd;
-    --muted: #a19685;
-    --accent: #d8a15f;
-    --accent-soft: #2f2519;
-    --grass-0: #2a241b;
-    --grass-1: #5c452a;
-    --grass-2: #a06f36;
-    --grass-3: #e5a94f;
+    --bg: #141210;
+    --surface: #1c1917;
+    --line: #302b25;
+    --line-soft: #262220;
+    --ink: #f2ede4;
+    --muted: #978f84;
+    --accent: #dd9aac;
+    --accent-ink: #e8b0bf;
+    --accent-soft: #2a1f23;
+
+    --grass-0: #262220;
+    --grass-1: #4e343c;
+    --grass-2: #8d5568;
+    --grass-3: #d891a4;
   }
 }
 
 @theme inline {
   --color-bg: var(--bg);
   --color-surface: var(--surface);
-  --color-line: var(--border);
-  --color-ink: var(--text);
+  --color-line: var(--line);
+  --color-line-soft: var(--line-soft);
+  --color-ink: var(--ink);
   --color-muted: var(--muted);
   --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
   --color-accent-soft: var(--accent-soft);
 }
 
 html,
 body {
   background: var(--bg);
-  color: var(--text);
+  color: var(--ink);
 }
 
 body {
-  font-family: ui-sans-serif, system-ui, "Pretendard", "Apple SD Gothic Neo",
-    "Malgun Gothic", sans-serif;
+  font-family: "Pretendard Variable", Pretendard, ui-sans-serif, system-ui,
+    "Apple SD Gothic Neo", sans-serif;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/*
+ * 참조한 사이트들의 공통 문법 — 대문자 + 넓은 자간의 작은 라벨.
+ * 한글은 대문자 개념이 없으므로 자간만 벌린다.
+ */
+.label {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.label-ko {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--muted);
 }
 
 /* 책등 세로쓰기 — 글자를 세워 쌓는다 */
@@ -58,22 +90,30 @@ body {
   text-orientation: upright;
 }
 
-/* 책장 선반 나뭇결 */
-.shelf-board {
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--accent) 55%, #000 0%) 0%,
-    color-mix(in srgb, var(--accent) 75%, #000 15%) 100%
-  );
-}
-
 input,
 textarea,
 select {
-  color: var(--text);
+  color: var(--ink);
 }
 
 input::placeholder,
 textarea::placeholder {
-  color: var(--muted);
+  color: color-mix(in srgb, var(--muted) 70%, transparent);
+}
+
+/*
+ * 입력란은 밑줄 색이 바뀌는 것으로 포커스를 알리므로,
+ * 기본 링까지 씌우면 밑줄 스타일 위에 네모 상자가 겹친다.
+ * 링은 버튼·링크에만 남긴다.
+ */
+a:focus-visible,
+button:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 3px;
+}
+
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none;
 }

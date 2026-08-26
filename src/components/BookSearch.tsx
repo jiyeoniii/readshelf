@@ -74,7 +74,7 @@ export default function BookSearch({
 
   return (
     <div>
-      <span className="mb-1.5 block text-xs font-medium text-muted">제목</span>
+      <span className="label mb-2 block">제목</span>
 
       <div className="flex gap-2">
         <input
@@ -89,15 +89,15 @@ export default function BookSearch({
             }
           }}
           placeholder="예) 불편한 편의점"
-          className="min-w-0 flex-1 rounded-lg border border-line bg-bg px-3 py-2 text-sm outline-none focus:border-accent"
+          className="min-w-0 flex-1 border-b border-line bg-transparent pb-2 text-sm outline-none transition focus:border-accent"
         />
         <button
           type="button"
           onClick={() => void search()}
           disabled={loading || !query.trim()}
-          className="shrink-0 rounded-lg border border-line px-3 py-2 text-xs text-muted transition hover:text-ink disabled:opacity-40"
+          className="shrink-0 border-b border-line pb-2 text-[11px] uppercase tracking-[0.14em] text-muted transition hover:border-accent hover:text-accent disabled:opacity-40"
         >
-          {loading ? "검색 중…" : "책 검색"}
+          {loading ? "Searching…" : "Search"}
         </button>
       </div>
 
@@ -110,14 +110,14 @@ export default function BookSearch({
       )}
 
       {results && results.length > 0 && (
-        <ul className="mt-2 max-h-60 space-y-1 overflow-y-auto rounded-lg border border-line bg-bg p-1">
+        <ul className="mt-3 max-h-60 overflow-y-auto border-y border-line-soft">
           {results.map((r, i) => (
             <li key={`${r.isbn ?? r.title}-${i}`}>
               <button
                 type="button"
                 disabled={picking !== null}
                 onClick={() => void pick(r)}
-                className="flex w-full items-center gap-3 rounded-md p-2 text-left transition hover:bg-accent-soft disabled:opacity-50"
+                className="flex w-full items-center gap-3 border-b border-line-soft py-3 text-left transition last:border-0 hover:bg-accent-soft/50 disabled:opacity-50"
               >
                 {r.coverUrl ? (
                   // 알라딘 CDN 이미지라 next/image 최적화 대상은 아니다
@@ -125,10 +125,10 @@ export default function BookSearch({
                   <img
                     src={r.coverUrl}
                     alt=""
-                    className="h-14 w-10 shrink-0 rounded-sm object-cover shadow-sm"
+                    className="h-14 w-10 shrink-0 object-cover"
                   />
                 ) : (
-                  <span className="h-14 w-10 shrink-0 rounded-sm bg-line" />
+                  <span className="h-14 w-10 shrink-0 bg-line-soft" />
                 )}
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-sm font-medium">

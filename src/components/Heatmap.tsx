@@ -76,8 +76,8 @@ export default function Heatmap({
       </div>
 
       {/* 범례 */}
-      <div className="mt-3 flex items-center gap-1.5 text-[10px] text-muted">
-        <span>적음</span>
+      <div className="mt-4 flex items-center gap-1.5 text-[10px] tracking-wider text-muted">
+        <span>LESS</span>
         {LEVEL_VAR.map((v) => (
           <span
             key={v}
@@ -85,8 +85,8 @@ export default function Heatmap({
             className="h-[11px] w-[11px] rounded-[3px]"
           />
         ))}
-        <span>많음</span>
-        <span className="ml-2">· 1~30쪽 / 31~99쪽 / 100쪽 이상</span>
+        <span>MORE</span>
+        <span className="ml-3 tracking-normal">1~30쪽 / 31~99쪽 / 100쪽 이상</span>
       </div>
     </div>
   );

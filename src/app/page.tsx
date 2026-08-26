@@ -6,7 +6,7 @@ import AddBookDialog from "@/components/AddBookDialog";
 import BookSpine from "@/components/BookSpine";
 import { useHydrated, useShelf } from "@/lib/storage";
 import { bookProgress, currentStreak, totalPages } from "@/lib/stats";
-import type { Book } from "@/lib/types";
+import type { Book, ReadingRecord } from "@/lib/types";
 
 const PER_SHELF = 9;
 
@@ -22,58 +22,74 @@ export default function ShelfPage() {
   const [adding, setAdding] = useState(false);
 
   const rows = chunk(books, PER_SHELF);
+  const empty = !hydrated || books.length === 0;
 
   return (
     <div>
-      <div className="flex flex-wrap items-end justify-between gap-4">
+      {/* 헤더 — 세리프 제목과 얇은 숫자 요약 */}
+      <header className="flex flex-wrap items-end justify-between gap-6">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">나의 책장</h1>
-          <p className="mt-1 text-sm text-muted">
-            {hydrated && books.length > 0
-              ? `${books.length}권 · 총 ${totalPages(records).toLocaleString()}쪽 · 연속 ${currentStreak(records)}일`
-              : "책을 추가하면 여기에 한 권씩 쌓입니다."}
-          </p>
+          <p className="label">My Shelf</p>
+          <h1 className="mt-2 font-[family-name:var(--font-serif)] text-[42px] leading-none tracking-tight">
+            나의 책장
+          </h1>
         </div>
-        <button
-          onClick={() => setAdding(true)}
-          className="rounded-full bg-accent px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:opacity-90"
-        >
-          + 책 추가
-        </button>
-      </div>
 
-      <div className="mt-8 space-y-1">
-        {rows.map((row, i) => (
-          <Shelf key={i} books={row} records={records} empty={!hydrated || books.length === 0} />
-        ))}
-      </div>
+        {hydrated && books.length > 0 && (
+          <dl className="flex items-end gap-8">
+            <Figure label="Books" value={books.length} unit="권" />
+            <Figure label="Pages" value={totalPages(records)} unit="쪽" />
+            <Figure label="Streak" value={currentStreak(records)} unit="일" />
+          </dl>
+        )}
+      </header>
 
-      {hydrated && books.length === 0 && (
-        <div className="mt-10 rounded-2xl border border-dashed border-line p-10 text-center">
-          <p className="text-3xl">📖</p>
-          <p className="mt-3 font-medium">아직 책장이 비어 있어요</p>
-          <p className="mt-1 text-sm text-muted">
+      {/* 책장 */}
+      <section className="mt-16">
+        <div className="space-y-2">
+          {rows.map((row, i) => (
+            <Shelf key={i} books={row} records={records} empty={empty} />
+          ))}
+        </div>
+      </section>
+
+      {hydrated && books.length === 0 ? (
+        <div className="mt-20 text-center">
+          <p className="font-[family-name:var(--font-serif)] text-2xl">
+            아직 책장이 비어 있어요
+          </p>
+          <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-muted">
             첫 책을 추가하고 독서 기록을 남겨보세요. 기록이 쌓이면 AI가 나의 독서
             취향을 분석해줍니다.
           </p>
           <button
             onClick={() => setAdding(true)}
-            className="mt-5 rounded-full bg-accent px-5 py-2 text-sm font-medium text-white"
+            className="mt-8 rounded-full bg-ink px-7 py-3 text-[11px] uppercase tracking-[0.16em] text-bg transition hover:bg-accent"
           >
-            첫 책 추가하기
+            Add your first book
+          </button>
+        </div>
+      ) : (
+        <div className="mt-10 flex justify-center">
+          <button
+            onClick={() => setAdding(true)}
+            className="rounded-full border border-line px-7 py-3 text-[11px] uppercase tracking-[0.16em] text-muted transition hover:border-accent hover:text-accent"
+          >
+            + Add book
           </button>
         </div>
       )}
 
+      {/* 목록 */}
       {hydrated && books.length > 0 && (
-        <section className="mt-10">
-          <h2 className="text-sm font-semibold text-muted">목록으로 보기</h2>
-          <ul className="mt-3 divide-y divide-line overflow-hidden rounded-xl border border-line bg-surface">
+        <section className="mt-24">
+          <p className="label border-b border-line-soft pb-3">All books</p>
+          <ul>
             {books.map((b) => (
-              <li key={b.id}>
+              <li key={b.id} className="border-b border-line-soft">
                 <Link
                   href={`/book/${b.id}`}
-                  className="flex items-center gap-3 px-4 py-3 transition hover:bg-accent-soft/50"
+                  className="group flex items-center gap-5 py-4 transition-colors"
                 >
                   {b.coverImage ? (
                     // 알라딘 CDN URL 또는 사용자가 올린 data URL
@@ -81,22 +97,27 @@ export default function ShelfPage() {
                     <img
                       src={b.coverImage}
                       alt=""
-                      className="h-11 w-8 shrink-0 rounded-sm object-cover shadow-sm"
+                      className="h-14 w-10 shrink-0 object-cover"
                     />
                   ) : (
                     <span
-                      className="h-11 w-2 shrink-0 rounded-sm"
+                      className="h-14 w-10 shrink-0"
                       style={{ backgroundColor: b.spineColor }}
                     />
                   )}
+
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-medium">{b.title}</span>
-                    <span className="block truncate text-xs text-muted">
+                    <span className="block truncate text-[15px] transition-colors group-hover:text-accent">
+                      {b.title}
+                    </span>
+                    <span className="mt-1 block truncate text-xs text-muted">
                       {b.author} · {b.genre}
                     </span>
                   </span>
-                  <span className="text-xs text-muted">
-                    {bookProgress(b, records)}%
+
+                  <span className="font-[family-name:var(--font-serif)] text-lg text-muted">
+                    {bookProgress(b, records)}
+                    <span className="text-xs">%</span>
                   </span>
                 </Link>
               </li>
@@ -110,31 +131,53 @@ export default function ShelfPage() {
   );
 }
 
+/** 헤더 우측의 숫자 요약 — 라벨은 작게, 숫자는 세리프로 */
+function Figure({
+  label,
+  value,
+  unit,
+}: {
+  label: string;
+  value: number;
+  unit: string;
+}) {
+  return (
+    <div className="text-right">
+      <dt className="label">{label}</dt>
+      <dd className="mt-1 font-[family-name:var(--font-serif)] text-[28px] leading-none">
+        {value.toLocaleString()}
+        <span className="ml-0.5 text-xs text-muted">{unit}</span>
+      </dd>
+    </div>
+  );
+}
+
 function Shelf({
   books,
   records,
   empty,
 }: {
   books: Book[];
-  records: ReturnType<typeof useShelf>["records"];
+  records: ReadingRecord[];
   empty: boolean;
 }) {
   return (
     <div>
-      <div className="flex min-h-[385px] items-end gap-[3px] overflow-x-auto px-4 pb-0">
+      <div className="flex min-h-[385px] items-end gap-[3px] overflow-x-auto px-1 pb-0">
         {empty
           ? Array.from({ length: 5 }).map((_, i) => (
               <div
                 key={i}
                 style={{ width: 36, height: 290 + i * 16 }}
-                className="shrink-0 rounded-t-[3px] border border-dashed border-line bg-line/20"
+                className="shrink-0 border-x border-t border-dashed border-line"
               />
             ))
           : books.map((b) => (
               <BookSpine key={b.id} book={b} progress={bookProgress(b, records)} />
             ))}
       </div>
-      <div className="shelf-board h-3 rounded-sm shadow-[0_3px_6px_rgba(0,0,0,0.25)]" />
+      {/* 선반 — 두꺼운 나무판 대신 가는 선 */}
+      <div className="h-px bg-ink/25" />
     </div>
   );
 }

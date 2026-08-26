@@ -63,19 +63,24 @@ export default function BookDetailPage() {
     : 0;
 
   return (
-    <div className="space-y-8">
-      <Link href="/" className="inline-block text-sm text-muted hover:text-ink">
-        ← 책장
+    <div className="space-y-14">
+      <Link
+        href="/"
+        className="inline-block text-[11px] uppercase tracking-[0.14em] text-muted transition hover:text-accent"
+      >
+        ← Back to shelf
       </Link>
 
       {/* 기본 정보 */}
-      <section className="flex flex-col gap-6 rounded-2xl border border-line bg-surface p-6 sm:flex-row">
+      <section className="flex flex-col gap-10 sm:flex-row">
         <BookArtwork book={book} />
 
         <div className="min-w-0 flex-1 space-y-4">
           {/* 책 정보는 '수정하기' 다이얼로그에서 고친다 */}
           <div>
-            <h1 className="text-xl font-semibold tracking-tight">{book.title}</h1>
+            <h1 className="font-[family-name:var(--font-serif)] text-[34px] leading-tight tracking-tight">
+              {book.title}
+            </h1>
             <p className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted">
               <span>{book.author}</span>
               {book.publisher && (
@@ -85,7 +90,7 @@ export default function BookDetailPage() {
                 </>
               )}
               <span aria-hidden>·</span>
-              <span className="rounded-md bg-accent-soft px-2 py-0.5 text-xs text-accent">
+              <span className="text-xs tracking-wider text-accent">
                 {book.genre}
               </span>
               {book.totalPages > 0 && (
@@ -108,23 +113,25 @@ export default function BookDetailPage() {
             onBlur={() => updateBook(book.id, { review: review.trim() })}
             rows={2}
             placeholder="한줄 후기를 남겨보세요. AI 분석의 재료가 됩니다."
-            className="w-full resize-none rounded-lg border border-line bg-bg px-3 py-2 text-sm outline-none focus:border-accent"
+            className="w-full resize-none border-b border-line bg-transparent pb-2 text-sm leading-relaxed outline-none transition focus:border-accent"
           />
 
           {/* 진행률 */}
           <div>
-            <div className="flex items-center justify-between text-xs text-muted">
-              <span>독서 진행률</span>
-              <span>
-                {progress}%
+            <div className="flex items-center justify-between">
+              <span className="label">Progress</span>
+              <span className="text-xs text-muted">
+                <span className="font-[family-name:var(--font-serif)] text-lg text-ink">
+                  {progress}%
+                </span>
                 {book.totalPages > 0 &&
                   furthest > 0 &&
                   ` · ${furthest}/${book.totalPages}쪽`}
               </span>
             </div>
-            <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-line">
+            <div className="mt-3 h-px w-full bg-line">
               <div
-                className="h-full rounded-full bg-accent transition-all"
+                className="h-px bg-accent transition-all"
                 style={{ width: `${progress}%` }}
               />
             </div>
@@ -145,9 +152,9 @@ export default function BookDetailPage() {
 
       {/* 기록 목록 */}
       <section>
-        <h2 className="text-sm font-semibold text-muted">
-          나의 기록 {myRecords.length > 0 && `(${myRecords.length})`}
-        </h2>
+        <p className="label border-b border-line-soft pb-3">
+          My records {myRecords.length > 0 && `(${myRecords.length})`}
+        </p>
         {myRecords.length === 0 ? (
           <p className="mt-3 rounded-xl border border-dashed border-line p-6 text-center text-sm text-muted">
             아직 기록이 없어요. 오늘 읽은 페이지를 남겨보세요.
@@ -166,7 +173,7 @@ export default function BookDetailPage() {
                   />
                 </li>
               ) : (
-              <li key={r.id} className="rounded-xl border border-line bg-surface p-4">
+              <li key={r.id} className="border-b border-line-soft py-6">
                 <div className="flex items-start justify-between gap-3">
                   <div className="text-xs text-muted">
                     {r.date} · {r.startPage}–{r.endPage}쪽 ({r.pagesRead}쪽)
@@ -190,7 +197,7 @@ export default function BookDetailPage() {
                   </div>
                 </div>
                 {r.quote && (
-                  <blockquote className="mt-3 border-l-2 border-accent pl-3 text-sm italic leading-relaxed">
+                  <blockquote className="mt-4 border-l border-accent pl-4 font-[family-name:var(--font-serif)] text-lg leading-relaxed">
                     &ldquo;{r.quote}&rdquo;
                     {r.quotePage != null && (
                       <span className="ml-1 not-italic text-xs text-muted">
@@ -218,9 +225,9 @@ export default function BookDetailPage() {
             router.push("/");
           }
         }}
-        className="text-xs text-muted underline hover:text-red-500"
+        className="text-[11px] uppercase tracking-[0.14em] text-muted underline underline-offset-4 hover:text-accent"
       >
-        책 삭제
+        Delete book
       </button>
     </div>
   );
@@ -293,13 +300,9 @@ function RecordForm({
   return (
     <form
       onSubmit={submit}
-      className={`rounded-2xl border bg-surface p-5 ${
-        editing ? "border-accent" : "border-line"
-      }`}
+      className={`border-t pt-8 ${editing ? "border-accent" : "border-line-soft"}`}
     >
-      <h2 className="text-sm font-semibold">
-        {editing ? "기록 수정" : "오늘의 독서 기록"}
-      </h2>
+      <p className="label">{editing ? "Edit record" : "New record"}</p>
 
       <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <label className="col-span-2 block">
@@ -309,7 +312,7 @@ function RecordForm({
             value={date}
             max={toDateKey(new Date())}
             onChange={(e) => setDate(e.target.value)}
-            className="w-full rounded-lg border border-line bg-bg px-3 py-2 text-sm outline-none focus:border-accent"
+            className="w-full border-b border-line bg-transparent pb-2 text-sm outline-none transition focus:border-accent"
           />
         </label>
         <label className="block">
@@ -319,7 +322,7 @@ function RecordForm({
             onChange={(e) => setStartPage(e.target.value.replace(/\D/g, ""))}
             inputMode="numeric"
             placeholder="1"
-            className="w-full rounded-lg border border-line bg-bg px-3 py-2 text-sm outline-none focus:border-accent"
+            className="w-full border-b border-line bg-transparent pb-2 text-sm outline-none transition focus:border-accent"
           />
         </label>
         <label className="block">
@@ -329,7 +332,7 @@ function RecordForm({
             onChange={(e) => setEndPage(e.target.value.replace(/\D/g, ""))}
             inputMode="numeric"
             placeholder={totalPages ? String(totalPages) : "30"}
-            className="w-full rounded-lg border border-line bg-bg px-3 py-2 text-sm outline-none focus:border-accent"
+            className="w-full border-b border-line bg-transparent pb-2 text-sm outline-none transition focus:border-accent"
           />
         </label>
       </div>
@@ -341,7 +344,7 @@ function RecordForm({
             value={quote}
             onChange={(e) => setQuote(e.target.value)}
             placeholder="마음에 남은 문장을 옮겨 적어보세요"
-            className="w-full rounded-lg border border-line bg-bg px-3 py-2 text-sm outline-none focus:border-accent"
+            className="w-full border-b border-line bg-transparent pb-2 text-sm outline-none transition focus:border-accent"
           />
         </label>
         <label className="block">
@@ -351,7 +354,7 @@ function RecordForm({
             onChange={(e) => setQuotePage(e.target.value.replace(/\D/g, ""))}
             inputMode="numeric"
             placeholder="p."
-            className="w-full rounded-lg border border-line bg-bg px-3 py-2 text-sm outline-none focus:border-accent"
+            className="w-full border-b border-line bg-transparent pb-2 text-sm outline-none transition focus:border-accent"
           />
         </label>
       </div>
@@ -363,7 +366,7 @@ function RecordForm({
           onChange={(e) => setMemo(e.target.value)}
           rows={3}
           placeholder="읽으면서 든 생각을 자유롭게 남겨보세요"
-          className="w-full resize-none rounded-lg border border-line bg-bg px-3 py-2 text-sm outline-none focus:border-accent"
+          className="w-full resize-none border-b border-line bg-transparent pb-2 text-sm leading-relaxed outline-none transition focus:border-accent"
         />
       </label>
 
@@ -376,17 +379,17 @@ function RecordForm({
             <button
               type="button"
               onClick={onDone}
-              className="rounded-lg px-3 py-2 text-sm text-muted hover:text-ink"
+              className="px-2 text-[11px] uppercase tracking-[0.14em] text-muted hover:text-ink"
             >
-              취소
+              Cancel
             </button>
           )}
           <button
             type="submit"
             disabled={!valid}
-            className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white disabled:opacity-40"
+            className="rounded-full bg-ink px-6 py-2.5 text-[11px] uppercase tracking-[0.14em] text-bg transition hover:bg-accent disabled:opacity-30"
           >
-            {editing ? "수정 저장" : "기록 남기기"}
+            {editing ? "Save" : "Add record"}
           </button>
         </div>
       </div>

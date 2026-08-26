@@ -21,10 +21,10 @@ export default function BookArtwork({ book }: { book: Book }) {
         <img
           src={book.coverImage}
           alt={`${book.title} 표지`}
-          className="w-full rounded-lg shadow-[0_4px_16px_rgba(0,0,0,0.24)]"
+          className="w-full shadow-[0_8px_28px_rgba(0,0,0,0.14)]"
         />
       ) : (
-        <div className="flex aspect-[2/3] w-full flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-line p-4 text-center">
+        <div className="flex aspect-[2/3] w-full flex-col items-center justify-center gap-2 border border-dashed border-line p-4 text-center">
           <span className="text-2xl">📕</span>
           <span className="text-[11px] leading-relaxed text-muted">
             표지가 없어요
@@ -35,9 +35,9 @@ export default function BookArtwork({ book }: { book: Book }) {
       <button
         type="button"
         onClick={() => setEditing(true)}
-        className="w-full rounded-lg border border-line px-3 py-2 text-xs text-muted transition hover:border-accent hover:text-ink"
+        className="w-full border-b border-line pb-2 text-[11px] uppercase tracking-[0.14em] text-muted transition hover:border-accent hover:text-accent"
       >
-        수정하기
+        Edit
       </button>
 
       {editing && (

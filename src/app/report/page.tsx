@@ -72,11 +72,14 @@ export default function ReportPage() {
   }
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <header className="flex flex-wrap items-end justify-between gap-6">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">AI 독서 리포트</h1>
-          <p className="mt-1 text-sm text-muted">
+          <p className="label">AI Report</p>
+          <h1 className="mt-2 font-[family-name:var(--font-serif)] text-[42px] leading-none tracking-tight">
+            AI 독서 리포트
+          </h1>
+          <p className="mt-4 max-w-md text-sm leading-relaxed text-muted">
             내가 남긴 기록을 근거로, 나는 어떤 책을 좋아하는 사람인지 알려드려요.
           </p>
         </div>
@@ -84,140 +87,151 @@ export default function ReportPage() {
           <button
             onClick={generate}
             disabled={loading}
-            className="rounded-full bg-accent px-4 py-2 text-sm font-medium text-white transition hover:opacity-90 disabled:opacity-50"
+            className="rounded-full bg-ink px-7 py-3 text-[11px] uppercase tracking-[0.16em] text-bg transition hover:bg-accent disabled:opacity-40"
           >
-            {loading ? "분석 중…" : report ? "다시 분석하기" : "리포트 생성하기"}
+            {loading ? "Analyzing…" : report ? "Regenerate" : "Generate report"}
           </button>
         )}
-      </div>
+      </header>
 
       {/* 분석에 쓰이는 데이터 */}
-      <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Stat label="분석 대상 책" value={`${books.length}권`} />
-        <Stat label="독서 기록" value={`${records.length}건`} />
-        <Stat label="총 독서량" value={`${totalPages(records).toLocaleString()}쪽`} />
+      <section className="mt-14 grid grid-cols-2 gap-y-10 border-y border-line-soft py-10 sm:grid-cols-4 sm:gap-0">
+        <Stat label="Books" value={`${books.length}권`} />
+        <Stat label="Records" value={`${records.length}건`} />
+        <Stat label="Total pages" value={`${totalPages(records).toLocaleString()}쪽`} />
         <Stat
-          label="이번 달"
+          label="This month"
           value={`${month.days}일 · ${month.pages.toLocaleString()}쪽`}
+          last
         />
       </section>
 
       {!ready && (
-        <div className="rounded-2xl border border-dashed border-line p-10 text-center">
-          <p className="text-3xl">🌱</p>
-          <p className="mt-3 font-medium">분석할 기록이 아직 부족해요</p>
-          <p className="mt-1 text-sm text-muted">
+        <div className="mt-20 text-center">
+          <p className="font-[family-name:var(--font-serif)] text-2xl">
+            분석할 기록이 아직 부족해요
+          </p>
+          <p className="mx-auto mt-3 max-w-sm text-sm leading-relaxed text-muted">
             책을 추가하고 읽은 페이지와 문장을 남기면, 그 데이터를 바탕으로 AI가
             분석해드려요.
           </p>
           <Link
             href="/"
-            className="mt-5 inline-block rounded-full bg-accent px-5 py-2 text-sm font-medium text-white"
+            className="mt-8 inline-block rounded-full border border-line px-7 py-3 text-[11px] uppercase tracking-[0.16em] text-muted transition hover:border-accent hover:text-accent"
           >
-            책장으로 가기
+            Go to shelf
           </Link>
         </div>
       )}
 
       {error && (
-        <p className="rounded-xl border border-red-300/60 bg-red-500/10 px-4 py-3 text-sm text-red-600 dark:text-red-300">
+        <p className="mt-8 border-l-2 border-accent bg-accent-soft px-4 py-3 text-sm text-accent-ink">
           {error}
         </p>
       )}
 
       {loading && !report && (
-        <div className="space-y-3">
-          {[0, 1, 2, 3].map((i) => (
+        <div className="mt-14 space-y-6">
+          {[0, 1, 2].map((i) => (
             <div
               key={i}
-              className="h-28 animate-pulse rounded-2xl border border-line bg-surface"
+              className="h-20 animate-pulse border-b border-line-soft"
             />
           ))}
         </div>
       )}
 
       {report && (
-        <div className="space-y-4">
-          <section className="rounded-2xl border border-line bg-accent-soft p-6">
-            <p className="text-xs font-medium text-accent">AI 한줄 분석</p>
-            <p className="mt-2 text-lg font-semibold leading-relaxed tracking-tight">
+        <div className="mt-14">
+          {/* 한줄 분석 — 이 페이지의 주인공 */}
+          <section className="border-b border-ink/20 pb-14 text-center">
+            <p className="label">In one line</p>
+            <p className="mx-auto mt-5 max-w-2xl font-[family-name:var(--font-serif)] text-[30px] leading-[1.45] tracking-tight">
               {report.summary}
             </p>
           </section>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Card icon="📚" title="선호 장르" body={report.preferredGenres} />
-            <Card icon="🗓️" title="독서 습관" body={report.readingHabit} />
-            <Card icon="⭐" title="높은 평점의 공통점" body={report.ratingPattern} />
-            <section className="rounded-2xl border border-line bg-surface p-5">
-              <p className="text-xs font-medium text-muted">🔖 주요 관심 주제</p>
-              <div className="mt-3 flex flex-wrap gap-2">
+          <div className="mt-16 grid gap-x-14 gap-y-12 sm:grid-cols-2">
+            <Block label="Genre" title="선호 장르" body={report.preferredGenres} />
+            <Block label="Habit" title="독서 습관" body={report.readingHabit} />
+            <Block
+              label="Ratings"
+              title="높은 평점의 공통점"
+              body={report.ratingPattern}
+            />
+            <div>
+              <p className="label">Themes</p>
+              <p className="mt-2 text-[15px]">주요 관심 주제</p>
+              <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2">
                 {report.keywords.map((k) => (
                   <span
                     key={k}
-                    className="rounded-full bg-accent-soft px-3 py-1 text-sm text-accent"
+                    className="font-[family-name:var(--font-serif)] text-xl text-accent"
                   >
-                    #{k}
+                    {k}
                   </span>
                 ))}
               </div>
-            </section>
+            </div>
           </div>
 
           {report.recommendations && report.recommendations.length > 0 && (
-            <section className="rounded-2xl border border-line bg-surface p-5">
-              <p className="text-xs font-medium text-muted">
-                📖 다음에 읽으면 좋을 책
+            <section className="mt-20">
+              <p className="label border-b border-line-soft pb-3">
+                Next reads — 다음에 읽으면 좋을 책
               </p>
 
-              <ul className="mt-4 space-y-5">
+              <ul>
                 {report.recommendations.map((rec) => (
-                  <li key={rec.isbn ?? rec.title} className="flex gap-4">
+                  <li
+                    key={rec.isbn ?? rec.title}
+                    className="flex gap-6 border-b border-line-soft py-7"
+                  >
                     {rec.coverUrl ? (
                       // 알라딘 CDN 이미지라 next/image 대상은 아니다
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={rec.coverUrl}
                         alt=""
-                        className="h-[86px] w-[60px] shrink-0 rounded-md object-cover shadow-sm"
+                        className="h-[104px] w-[72px] shrink-0 object-cover"
                       />
                     ) : (
-                      <span className="flex h-[86px] w-[60px] shrink-0 items-center justify-center rounded-md border border-dashed border-line text-lg">
-                        📕
-                      </span>
+                      <span className="h-[104px] w-[72px] shrink-0 border border-dashed border-line" />
                     )}
 
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-semibold">{rec.title}</p>
-                      <p className="mt-0.5 text-xs text-muted">{rec.author}</p>
-                      <p className="mt-2 text-sm leading-relaxed">{rec.reason}</p>
+                      <p className="text-[15px]">{rec.title}</p>
+                      <p className="mt-1 text-xs text-muted">{rec.author}</p>
+                      <p className="mt-3 text-sm leading-relaxed text-ink/80">
+                        {rec.reason}
+                      </p>
                       <button
                         onClick={() => addRecommendation(rec)}
                         disabled={onShelf(rec)}
-                        className="mt-2.5 rounded-lg border border-line px-3 py-1 text-xs text-muted transition hover:border-accent hover:text-ink disabled:opacity-40"
+                        className="mt-4 text-[11px] uppercase tracking-[0.14em] text-muted underline underline-offset-4 transition hover:text-accent disabled:no-underline disabled:opacity-40"
                       >
-                        {onShelf(rec) ? "책장에 있음" : "책장에 추가"}
+                        {onShelf(rec) ? "On your shelf" : "+ Add to shelf"}
                       </button>
                     </div>
                   </li>
                 ))}
               </ul>
 
-              <p className="mt-4 border-t border-line pt-3 text-[11px] leading-relaxed text-muted/80">
+              <p className="mt-5 text-[11px] leading-relaxed text-muted">
                 추천받은 책은 알라딘에서 실제로 있는지 확인한 것만 보여드려요.
               </p>
             </section>
           )}
 
-          <div className="flex items-center justify-between px-1">
-            <p className="text-xs text-muted">
-              생성 시각 {new Date(report.generatedAt).toLocaleString("ko-KR")}
+          <div className="mt-16 flex items-center justify-between border-t border-line-soft pt-6">
+            <p className="text-[11px] text-muted">
+              {new Date(report.generatedAt).toLocaleString("ko-KR")}
             </p>
             <button
               onClick={() => saveReport(null)}
-              className="text-xs text-muted underline hover:text-ink"
+              className="text-[11px] uppercase tracking-[0.14em] text-muted underline underline-offset-4 hover:text-accent"
             >
-              리포트 지우기
+              Clear
             </button>
           </div>
         </div>
@@ -226,30 +240,40 @@ export default function ReportPage() {
   );
 }
 
-function Card({
-  icon,
+/** 리포트 항목 하나 — 카드 대신 라벨과 여백으로 구분한다 */
+function Block({
+  label,
   title,
   body,
 }: {
-  icon: string;
+  label: string;
   title: string;
   body: string;
 }) {
   return (
-    <section className="rounded-2xl border border-line bg-surface p-5">
-      <p className="text-xs font-medium text-muted">
-        {icon} {title}
-      </p>
-      <p className="mt-2 text-sm leading-relaxed">{body}</p>
-    </section>
+    <div>
+      <p className="label">{label}</p>
+      <p className="mt-2 text-[15px]">{title}</p>
+      <p className="mt-3 text-sm leading-relaxed text-ink/80">{body}</p>
+    </div>
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function Stat({
+  label,
+  value,
+  last,
+}: {
+  label: string;
+  value: string;
+  last?: boolean;
+}) {
   return (
-    <div className="rounded-xl border border-line bg-surface p-4">
-      <p className="text-xs text-muted">{label}</p>
-      <p className="mt-1 text-lg font-semibold tracking-tight">{value}</p>
+    <div className={`sm:px-8 ${last ? "" : "sm:border-r sm:border-line-soft"}`}>
+      <p className="label">{label}</p>
+      <p className="mt-2 font-[family-name:var(--font-serif)] text-[28px] leading-none">
+        {value}
+      </p>
     </div>
   );
 }
