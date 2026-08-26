@@ -5,28 +5,55 @@ import type { BookSearchResult } from "@/app/api/books/search/route";
 import BookSearch from "@/components/BookSearch";
 import { SpineFace, spineSize } from "@/components/BookSpine";
 import { fileToCoverPhoto, fileToSpinePhoto, type Photo } from "@/lib/image";
-import { addBook, newId } from "@/lib/storage";
-import { GENRES, SPINE_COLORS, type Genre } from "@/lib/types";
+import { addBook, newId, updateBook } from "@/lib/storage";
+import { GENRES, SPINE_COLORS, type Book, type Genre } from "@/lib/types";
 
 /** 다이얼로그가 길어지지 않게 미리보기는 줄여서 보여준다 */
 const PREVIEW_SCALE = 0.62;
 
-export default function AddBookDialog({ onClose }: { onClose: () => void }) {
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [publisher, setPublisher] = useState("");
-  const [genre, setGenre] = useState<Genre>("에세이");
-  const [totalPages, setTotalPages] = useState("");
-  const [spineColor, setSpineColor] = useState<string>(SPINE_COLORS[0]);
+/**
+ * 책 추가 / 수정 공용 다이얼로그.
+ * book을 넘기면 그 책을 고치는 모드로 열린다.
+ */
+export default function AddBookDialog({
+  book,
+  onClose,
+}: {
+  book?: Book;
+  onClose: () => void;
+}) {
+  const editing = book !== undefined;
+
+  const [title, setTitle] = useState(book?.title ?? "");
+  const [author, setAuthor] = useState(book?.author ?? "");
+  const [publisher, setPublisher] = useState(book?.publisher ?? "");
+  const [genre, setGenre] = useState<Genre>(book?.genre ?? "에세이");
+  const [totalPages, setTotalPages] = useState(
+    book?.totalPages ? String(book.totalPages) : "",
+  );
+  const [spineColor, setSpineColor] = useState<string>(
+    book?.spineColor ?? SPINE_COLORS[0],
+  );
 
   // 책등 사진은 선택 사항 — 없으면 색상 템플릿으로 그린다
-  const [photo, setPhoto] = useState<Photo | null>(null);
+  const [photo, setPhoto] = useState<Photo | null>(
+    book?.spineImage
+      ? { dataUrl: book.spineImage, aspect: book.spineAspect ?? 0.1 }
+      : null,
+  );
   const [photoBusy, setPhotoBusy] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
 
-  // 앞표지는 검색으로 받은 URL이거나, 직접 올린 사진이다
-  const [coverUrl, setCoverUrl] = useState<string | null>(null);
-  const [coverPhoto, setCoverPhoto] = useState<Photo | null>(null);
+  // 앞표지는 검색으로 받은 URL이거나, 직접 올린 사진이다.
+  // 수정 모드에서는 기존 값이 둘 중 어느 쪽인지 비율로 구분한다
+  const [coverUrl, setCoverUrl] = useState<string | null>(
+    book && book.coverImage && book.coverAspect === null ? book.coverImage : null,
+  );
+  const [coverPhoto, setCoverPhoto] = useState<Photo | null>(
+    book && book.coverImage && book.coverAspect !== null
+      ? { dataUrl: book.coverImage, aspect: book.coverAspect }
+      : null,
+  );
   const [coverBusy, setCoverBusy] = useState(false);
   const coverInput = useRef<HTMLInputElement>(null);
 
@@ -83,23 +110,32 @@ export default function AddBookDialog({ onClose }: { onClose: () => void }) {
   function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!canSubmit) return;
+    const fields = {
+      title: title.trim(),
+      author: author.trim() || "저자 미상",
+      publisher: publisher.trim(),
+      genre,
+      spineColor,
+      spineImage: photo?.dataUrl ?? null,
+      spineAspect: photo?.aspect ?? null,
+      coverImage: coverPhoto?.dataUrl ?? coverUrl,
+      coverAspect: coverPhoto?.aspect ?? null,
+      totalPages: Number(totalPages) || 0,
+    };
+
     try {
-      addBook({
-        id: newId(),
-        title: title.trim(),
-        author: author.trim() || "저자 미상",
-        publisher: publisher.trim(),
-        genre,
-        spineColor,
-        spineImage: photo?.dataUrl ?? null,
-        spineAspect: photo?.aspect ?? null,
-        coverImage: coverPhoto?.dataUrl ?? coverUrl,
-        coverAspect: coverPhoto?.aspect ?? null,
-        totalPages: Number(totalPages) || 0,
-        rating: 0,
-        review: "",
-        createdAt: new Date().toISOString(),
-      });
+      if (book) {
+        // 별점·후기는 상세 페이지에서 고치므로 여기서 덮어쓰지 않는다
+        updateBook(book.id, fields);
+      } else {
+        addBook({
+          id: newId(),
+          ...fields,
+          rating: 0,
+          review: "",
+          createdAt: new Date().toISOString(),
+        });
+      }
       onClose();
     } catch (err) {
       // 저장 공간이 가득 찬 경우 — 다이얼로그를 닫지 않고 알린다
@@ -119,9 +155,11 @@ export default function AddBookDialog({ onClose }: { onClose: () => void }) {
         onSubmit={submit}
         className="w-full max-w-md rounded-t-2xl border border-line bg-surface p-6 shadow-2xl sm:rounded-2xl"
       >
-        <h2 className="text-lg font-semibold">책 추가</h2>
+        <h2 className="text-lg font-semibold">{editing ? "책 수정" : "책 추가"}</h2>
         <p className="mt-1 text-sm text-muted">
-          한 권을 추가할 때마다 나의 책장이 채워집니다.
+          {editing
+            ? "제목을 다시 검색하면 표지와 정보를 새로 가져옵니다."
+            : "한 권을 추가할 때마다 나의 책장이 채워집니다."}
         </p>
 
         <div className="mt-5 space-y-4">
@@ -338,7 +376,7 @@ export default function AddBookDialog({ onClose }: { onClose: () => void }) {
             disabled={!canSubmit}
             className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white disabled:opacity-40"
           >
-            책장에 꽂기
+            {editing ? "저장" : "책장에 꽂기"}
           </button>
         </div>
       </form>

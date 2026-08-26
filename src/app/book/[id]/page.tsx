@@ -15,7 +15,6 @@ import {
   useShelf,
 } from "@/lib/storage";
 import { bookProgress, lastReadDate, toDateKey } from "@/lib/stats";
-import { GENRES, type Genre } from "@/lib/types";
 
 export default function BookDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -71,59 +70,28 @@ export default function BookDetailPage() {
         <BookArtwork book={book} />
 
         <div className="min-w-0 flex-1 space-y-4">
+          {/* 책 정보는 '수정하기' 다이얼로그에서 고친다 */}
           <div>
-            <input
-              value={book.title}
-              onChange={(e) => updateBook(book.id, { title: e.target.value })}
-              className="w-full bg-transparent text-xl font-semibold tracking-tight outline-none"
-            />
-            <div className="mt-1.5 flex flex-wrap items-center gap-2 text-sm text-muted">
-              <input
-                value={book.author}
-                onChange={(e) => updateBook(book.id, { author: e.target.value })}
-                placeholder="저자"
-                className="bg-transparent outline-none"
-                size={10}
-              />
-              <span>·</span>
-              <input
-                value={book.publisher}
-                onChange={(e) => updateBook(book.id, { publisher: e.target.value })}
-                placeholder="출판사"
-                className="bg-transparent outline-none"
-                size={8}
-              />
-              <span>·</span>
-              <select
-                value={book.genre}
-                onChange={(e) =>
-                  updateBook(book.id, { genre: e.target.value as Genre })
-                }
-                className="rounded-md border border-line bg-bg px-2 py-0.5 text-xs outline-none"
-              >
-                {GENRES.map((g) => (
-                  <option key={g} value={g}>
-                    {g}
-                  </option>
-                ))}
-              </select>
-              <span>·</span>
-              <label className="flex items-center gap-1 text-xs">
-                총
-                <input
-                  value={book.totalPages || ""}
-                  onChange={(e) =>
-                    updateBook(book.id, {
-                      totalPages: Number(e.target.value.replace(/\D/g, "")) || 0,
-                    })
-                  }
-                  inputMode="numeric"
-                  placeholder="0"
-                  className="w-12 rounded-md border border-line bg-bg px-1.5 py-0.5 text-center outline-none"
-                />
-                쪽
-              </label>
-            </div>
+            <h1 className="text-xl font-semibold tracking-tight">{book.title}</h1>
+            <p className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted">
+              <span>{book.author}</span>
+              {book.publisher && (
+                <>
+                  <span aria-hidden>·</span>
+                  <span>{book.publisher}</span>
+                </>
+              )}
+              <span aria-hidden>·</span>
+              <span className="rounded-md bg-accent-soft px-2 py-0.5 text-xs text-accent">
+                {book.genre}
+              </span>
+              {book.totalPages > 0 && (
+                <>
+                  <span aria-hidden>·</span>
+                  <span className="text-xs">총 {book.totalPages}쪽</span>
+                </>
+              )}
+            </p>
           </div>
 
           <RatingStars
