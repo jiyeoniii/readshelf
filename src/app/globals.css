@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #f6f1e8;
+  --surface: #fffdf8;
+  --border: #e4d9c6;
+  --text: #2c2620;
+  --muted: #7a6f60;
+  --accent: #7c4b2a;
+  --accent-soft: #f0e2d2;
+  --grass-0: #ece3d4;
+  --grass-1: #d8c39c;
+  --grass-2: #b98a4e;
+  --grass-3: #7c4b2a;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #17140f;
+    --surface: #201c16;
+    --border: #362f25;
+    --text: #f0e9dd;
+    --muted: #a19685;
+    --accent: #d8a15f;
+    --accent-soft: #2f2519;
+    --grass-0: #2a241b;
+    --grass-1: #5c452a;
+    --grass-2: #a06f36;
+    --grass-3: #e5a94f;
+  }
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-line: var(--border);
+  --color-ink: var(--text);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+}
+
+html,
+body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+body {
+  font-family: ui-sans-serif, system-ui, "Pretendard", "Apple SD Gothic Neo",
+    "Malgun Gothic", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 책등 세로쓰기 — 글자를 세워 쌓는다 */
+.spine-upright {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+}
+
+/* 책장 선반 나뭇결 */
+.shelf-board {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--accent) 55%, #000 0%) 0%,
+    color-mix(in srgb, var(--accent) 75%, #000 15%) 100%
+  );
+}
+
+input,
+textarea,
+select {
+  color: var(--text);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--muted);
+}
