@@ -16,15 +16,30 @@ export function spineSize(totalPages: number, aspect?: number | null) {
   const templateWidth = Math.round(30 + (p / 900) * 18); // 30~48px
 
   if (aspect && aspect > 0) {
-    // 사진은 자기 비율대로 그려야 잘리지 않는다. 다만 같은 페이지 수의
-    // 템플릿과 두께가 지나치게 벌어지지 않도록 위아래로 묶어둔다.
-    const width = Math.round(
-      Math.max(
-        templateWidth * 0.6,
-        Math.min(templateWidth * 1.8, height * aspect),
-      ),
-    );
-    return { width, height };
+    /*
+     * 사진 비율을 폭에 그대로 반영하면 템플릿 책등보다 유독 얇아진다.
+     * 책등 사진은 보통 책 전체 길이를 담아 1:12쯤 되는데, 같은 높이에
+     * 그 비율을 적용하면 폭이 템플릿 두께의 3분의 2밖에 안 된다.
+     *
+     * 그래서 폭은 템플릿 두께 가까이 유지하고, 모자란 만큼 높이를 늘려
+     * 사진이 잘리지 않게 한다. 실제 책장도 책마다 높이가 다르니 어색하지 않다.
+     * 높이를 한도까지 늘려도 안 되는 극단적인 사진만 잘라낸다.
+     */
+    const minWidth = templateWidth * 0.85;
+    const maxWidth = templateWidth * 1.5;
+    const maxHeight = height * 1.18;
+
+    let width = height * aspect;
+    let tall = height;
+
+    if (width < minWidth) {
+      width = minWidth;
+      tall = Math.min(maxHeight, width / aspect);
+    } else if (width > maxWidth) {
+      width = maxWidth;
+    }
+
+    return { width: Math.round(width), height: Math.round(tall) };
   }
 
   return { width: templateWidth, height };
