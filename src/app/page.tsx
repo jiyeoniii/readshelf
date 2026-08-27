@@ -176,8 +176,16 @@ function Shelf({
               <BookSpine key={b.id} book={b} progress={bookProgress(b, records)} />
             ))}
       </div>
-      {/* 선반 — 두꺼운 나무판 대신 가는 선 */}
-      <div className="h-px bg-ink/25" />
+      {/* 선반 널 — 윗면·앞면·윤곽선으로 두께를 만든다 */}
+      <div className="relative">
+        {/* 책이 닿는 윗면 — 위 모서리에 윤곽선 */}
+        <div className="h-[4px] border-t border-[var(--shelf-edge)] bg-[var(--shelf-top)]" />
+        {/* 널의 앞면 */}
+        <div className="h-[14px] bg-[var(--shelf-face)]" />
+        {/* 아래 모서리와 바닥 그림자 */}
+        <div className="h-px bg-[var(--shelf-edge)]" />
+        <div className="h-4 bg-gradient-to-b from-ink/14 to-transparent" />
+      </div>
     </div>
   );
 }

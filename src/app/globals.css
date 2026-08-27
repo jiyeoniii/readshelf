@@ -16,6 +16,11 @@
   --accent-ink: #a85a72;
   --accent-soft: #f9edf0;
 
+  /* 선반 널 — 윗면은 밝고 앞면은 약간 어둡게 두께를 만든다 */
+  --shelf-top: #ece1cb;
+  --shelf-face: #d8cbb0;
+  --shelf-edge: #b6a488;
+
   /* 잔디 — 크림에서 로즈로 */
   --grass-0: #efe9dc;
   --grass-1: #f0cdd6;
@@ -34,6 +39,10 @@
     --accent: #dd9aac;
     --accent-ink: #e8b0bf;
     --accent-soft: #2a1f23;
+
+    --shelf-top: #322b23;
+    --shelf-face: #262019;
+    --shelf-edge: #191410;
 
     --grass-0: #262220;
     --grass-1: #4e343c;
