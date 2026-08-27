@@ -3,17 +3,47 @@
 import Link from "next/link";
 import { useState } from "react";
 import AddBookDialog from "@/components/AddBookDialog";
-import BookSpine from "@/components/BookSpine";
+import BookSpine, { spineSize } from "@/components/BookSpine";
 import { useHydrated, useShelf } from "@/lib/storage";
 import { bookProgress, currentStreak, totalPages } from "@/lib/stats";
 import type { Book, ReadingRecord } from "@/lib/types";
 
-const PER_SHELF = 9;
+/**
+ * 한 선반에 들어가는 폭(px)과 책 사이 간격.
+ * 본문 최대 폭 1024px에서 안쪽 여백을 때 값이다.
+ */
+const SHELF_WIDTH = 952;
+const SPINE_GAP = 3;
 
-function chunk<T>(items: T[], size: number): T[][] {
-  const rows: T[][] = [];
-  for (let i = 0; i < items.length; i += size) rows.push(items.slice(i, i + size));
-  return rows.length ? rows : [[]];
+/**
+ * 책을 선반에 나눈다.
+ *
+ * 권수로 끊으면 엉성하게 빈다 — 책등은 페이지 수마다 두께가 달라서
+ * 어떤 9권은 선반의 절반도 못 채우고 어떤 9권은 넘친다.
+ * 그래서 실제 두께를 더해가며 선반이 차면 다음 줄로 넘긴다.
+ * 보통 두께라면 한 줄에 20~25권이 들어간다.
+ */
+function packShelves(books: Book[]): Book[][] {
+  const rows: Book[][] = [];
+  let row: Book[] = [];
+  let used = 0;
+
+  for (const book of books) {
+    const width = spineSize(book.totalPages, book.spineAspect).width;
+    const next = row.length === 0 ? width : used + SPINE_GAP + width;
+
+    if (row.length > 0 && next > SHELF_WIDTH) {
+      rows.push(row);
+      row = [book];
+      used = width;
+    } else {
+      row.push(book);
+      used = next;
+    }
+  }
+
+  if (row.length > 0) rows.push(row);
+  return rows.length > 0 ? rows : [[]];
 }
 
 export default function ShelfPage() {
@@ -21,7 +51,7 @@ export default function ShelfPage() {
   const hydrated = useHydrated();
   const [adding, setAdding] = useState(false);
 
-  const rows = chunk(books, PER_SHELF);
+  const rows = packShelves(books);
   const empty = !hydrated || books.length === 0;
 
   return (
