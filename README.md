@@ -6,6 +6,9 @@
 
 **🔗 [readshelf-murex.vercel.app](https://readshelf-murex.vercel.app)**
 
+> **Hackathon MVP (v1.0)** — 해커톤 제출 시점의 완성본은 `v1.0-hackathon` 태그에 고정되어 있습니다.
+> `main` 브랜치는 그 이후의 고도화(Post-Hackathon Development)가 이어집니다. → [버전](#버전)
+
 <br>
 
 <img width="1291" height="852" alt="image" src="https://github.com/user-attachments/assets/3457e54f-749e-40c1-b4ae-5b30784b46a9" />
@@ -90,3 +93,19 @@ Recommendation { title, author, reason, coverUrl, isbn }
 - **잔디 단계** = 0쪽 / 1–30쪽 / 31–99쪽 / 100쪽 이상
 - **연속 독서일** = 오늘(또는 어제)부터 거슬러 올라가며 기록이 끊기지 않은 일수
 
+<br>
+
+## 버전
+
+| 구분 | 위치 | 내용 |
+|---|---|---|
+| **Hackathon MVP (v1.0)** | 태그 `v1.0-hackathon` | 해커톤 제출 시점 그대로 고정. 이후 커밋의 영향을 받지 않습니다. |
+| **Post-Hackathon Development** | 브랜치 `main` | v1.0 이후의 고도화 작업이 쌓이는 곳. 배포되는 것도 이쪽입니다. |
+
+해커톤 버전을 그대로 열어보려면:
+
+```bash
+git checkout v1.0-hackathon   # 그 시점의 코드
+npm install && npm run dev
+git checkout main             # 고도화 브랜치로 복귀
+```
